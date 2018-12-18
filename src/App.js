@@ -1,25 +1,25 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+
+import Signs from './Signs/Signs'
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <p>Один символ</p>
+        <Signs 
+          char1 = 'A'
+        />
+        <p>Два символа</p>
+        <Signs 
+          char1 = '1'
+          char2 = '2'
+        />
+        <p>Нет символов</p>
+        <Signs 
+        />
+        
       </div>
     );
   }

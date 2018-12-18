@@ -1,0 +1,18 @@
+.main {
+    display: inline-block;
+    line-height: 1;
+    width: 1rem;
+    padding: 0.1rem;
+    margin: 0.2rem 0.4rem 0.2rem 0;
+    text-align: center;
+
+    color: hsl(43, 89%, 84%);
+    background-color: hsla(292, 25%, 24%, 0.9);
+
+    border-color: hsla(292, 25%, 24%, 0.5);
+    border-width: 1px;
+    border-style: dotted;
+    border-radius: 0.5rem;
+    
+    font-weight: bold;
+}
