@@ -9,12 +9,11 @@ class App extends Component {
       <div className="App">
         <p>Один символ</p>
         <Signs 
-          char1 = 'A'
+          chars = 'A'
         />
         <p>Два символа</p>
         <Signs 
-          char1 = '1'
-          char2 = '2'
+          chars = '12'
         />
         <p>Нет символов</p>
         <Signs 
