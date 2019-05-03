@@ -1,11 +1,14 @@
-html {
+:root {
   font-size: 60px;
-  font-family: "Times New Roman";
+  --text-color:hsla(292, 25%, 24%, 0.9);
+  /* --text-color:red; */
+  --bg-color: hsl(43, 89%, 84%);
 }
 
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--bg-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

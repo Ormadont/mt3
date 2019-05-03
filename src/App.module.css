@@ -1,0 +1,9 @@
+.app {
+    font-family: 'Theano ModernC';
+    color: var(--text-color);
+}
+
+@font-face {
+    font-family: "Theano ModernC";
+    src: url("./fonts/13356.ttf");
+  }
