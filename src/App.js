@@ -10,15 +10,7 @@ class App extends Component {
         <p>Один символ</p>
         <Signs 
           chars = 'A'
-        />
-        <p>Два символа</p>
-        <Signs 
-          chars = '12'
-        />
-        <p>Нет символов</p>
-        <Signs 
-        />
-        
+        />     
       </div>
     );
   }
