@@ -1,9 +1,22 @@
 .app {
     font-family: 'Theano ModernC';
     color: var(--text-color);
+    margin-top: 5px;
+    margin-left: 10px;
 }
 
 @font-face {
     font-family: "Theano ModernC";
     src: url("./fonts/13356.ttf");
   }
+
+input, button {
+    color: inherit;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.factorInput {
+    margin-left: 10px;
+    width: 1em;
+}

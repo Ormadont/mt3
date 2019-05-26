@@ -91,14 +91,18 @@ class App extends Component {
         <form autoComplete="off" onSubmit={this.addExpression_handleSubmit.bind(this)}>
           <span>Первый множитель</span>
           <input 
+            className = {styles.factorInput}
+            type="number" min="1" max="9"
             name = "factor1"
             value={this.state.tempFactor1} 
-            onChange={this.changeTempFactorX_handleChange.bind(this)}/>
+            onChange={this.changeTempFactorX_handleChange.bind(this)}/><br />
           <span>Второй множитель</span>
           <input 
+            className = {styles.factorInput}
+            type="number" min="1" max="9"
             name = "factor2"
             value={this.state.tempFactor2} 
-            onChange={this.changeTempFactorX_handleChange.bind(this)}/>
+            onChange={this.changeTempFactorX_handleChange.bind(this)}/><br />
           <input 
             type="submit" 
             value="Добавить выражение"
@@ -114,7 +118,8 @@ class App extends Component {
   delCurExpression_handleClick = () => {
     if (this.state.expressions.length > 1) {
       const expressions = [...this.state.expressions];
-      const delEx = expressions.splice(this.state.expCurNum,1);
+      // const delEx = 
+      expressions.splice(this.state.expCurNum,1);
       this.setState({expressions:expressions});
       // console.log(`del: ${delEx[0].key}`)
       this.setState({expCurNum: Math.floor(Math.random()*(this.state.expressions.length-1))});
@@ -142,9 +147,9 @@ class App extends Component {
     if (expressions[expNum].showedPart !== '') {
       expressions[expNum].hidedPart = expressions[expNum].showedPart;
       expressions[expNum].showedPart = '';
+    }
       this.setState({expressions: expressions});
       this.setState({expCurNum: Math.floor(Math.random()*this.state.expressions.length)});
-    }
   }
 }
 
