@@ -122,7 +122,7 @@ class App extends Component {
       expressions[expNum].hidedPart = expressions[expNum].showedPart;
       expressions[expNum].showedPart = '';
       this.setState({expressions: expressions});
-      this.setState({expCurNum: Math.floor(Math.random()*4)});
+      this.setState({expCurNum: Math.floor(Math.random()*this.state.expressions.length)});
     }
   }
 }
