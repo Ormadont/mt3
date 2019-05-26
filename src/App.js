@@ -9,16 +9,46 @@ class App extends Component {
     scores: 0,
     expCurNum: Math.floor(Math.random()*4),
     expressions: [
-      {factor1: 1, factor2: 2, hidedPart: 'factor1', showedPart: ''},
-      {factor1: 2, factor2: 3, hidedPart: 'factor2', showedPart: ''},
-      {factor1: 3, factor2: 4, hidedPart: 'result', showedPart: ''},
-      {factor1: 13, factor2: 14, hidedPart: 'factor2', showedPart: ''},
+      {factor1: 1, factor2: 2, hidedPart: 'factor1', showedPart: '', key:'1'},
+      {factor1: 2, factor2: 3, hidedPart: 'factor2', showedPart: '', key:'2'},
+      {factor1: 3, factor2: 4, hidedPart: 'result', showedPart: '', key:'3'},
+      {factor1: 13, factor2: 14, hidedPart: 'factor2', showedPart: '', key:'4'},
     ],
+    tempFactor1: -1, tempFactor2: -1,
     showAllExpressions: false,
   }
-  showHideExpressions = () => {
+  showHideExpressions_handleClick = () => {
     const doesShow = this.state.showAllExpressions;
     this.setState({showAllExpressions: !doesShow});
+  }
+  changeTempFactorX_handleChange = event => {
+    (event.target.name === 'factor1') ? this.setState({tempFactor1: event.target.value}) : this.setState({tempFactor2: event.target.value}) 
+  }
+  addExpression_handleSubmit = event => {
+    const expressions = [...this.state.expressions];
+    let rndHidedPart = '';
+    switch (Math.floor(Math.random()*3)) {
+      case 0:
+        rndHidedPart = 'factor1';
+        break;
+      case 1:
+        rndHidedPart = 'factor2';
+        break;
+      default:
+          rndHidedPart = 'result';
+        break;
+    }
+    const key = `addedManually${expressions.length.toString()}`;
+    const expression = {
+      factor1: this.state.tempFactor1, 
+      factor2: this.state.tempFactor2, 
+      hidedPart: rndHidedPart,
+      showedPart: '',
+      key: key,
+    }
+    expressions.push(expression);
+    event.preventDefault(); //не дать выполнить действие по умолчанию - обновить страницу
+    this.setState({expressions: expressions});
   }
 
   render() {
@@ -30,6 +60,7 @@ class App extends Component {
           factor1={expression.factor1}
           factor2={expression.factor2}
           hidedPart={expression.hidedPart}
+          key={expression.key}
         />
       )
     }
@@ -37,17 +68,37 @@ class App extends Component {
     return (
       <div className = {styles.app}>
         <h1>Таблица умножения</h1>
+        
         <button onClick={this.showAnswer_handleClick} >Показать ответ</button>
         <Expression 
           factor1 = {this.state.expressions[expNum].factor1}
           factor2 = {this.state.expressions[expNum].factor2}
           hidedPart = {this.state.expressions[expNum].hidedPart}
+          key = {this.state.expressions[expNum].key}
         />
         <button onClick={this.startAgain_handleClick}>Начать с начала</button>
-        <div>
-          <button onClick={this.showHideExpressions}>Показать все выражения</button>
+        
+        <div> 
+          <button onClick={this.showHideExpressions_handleClick}>Показать все выражения</button>
           {expressions}
         </div>
+        
+        <form onSubmit={this.addExpression_handleSubmit.bind(this)}>
+          <span>Первый множитель</span>
+          <input 
+            name = "factor1"
+            value={this.state.tempFactor1} 
+            onChange={this.changeTempFactorX_handleChange.bind(this)}/>
+          <span>Второй множитель</span>
+          <input 
+            name = "factor2"
+            value={this.state.tempFactor2} 
+            onChange={this.changeTempFactorX_handleChange.bind(this)}/>
+          <input 
+            type="submit" 
+            value="Добавить выражение"
+          />
+        </form>
       </div>
     );
   }
@@ -65,8 +116,8 @@ class App extends Component {
   }
 
   startAgain_handleClick = () => {
-    const expNum = this.state.expCurNum;
     const expressions = [...this.state.expressions];
+    const expNum = this.state.expCurNum;
     if (expressions[expNum].showedPart !== '') {
       expressions[expNum].hidedPart = expressions[expNum].showedPart;
       expressions[expNum].showedPart = '';
