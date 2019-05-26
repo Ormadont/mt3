@@ -104,8 +104,24 @@ class App extends Component {
             value="Добавить выражение"
           />
         </form>
+     
+        <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
+      
       </div>
     );
+  }
+
+  delCurExpression_handleClick = () => {
+    if (this.state.expressions.length > 1) {
+      const expressions = [...this.state.expressions];
+      const delEx = expressions.splice(this.state.expCurNum,1);
+      this.setState({expressions:expressions});
+      // console.log(`del: ${delEx[0].key}`)
+      this.setState({expCurNum: Math.floor(Math.random()*(this.state.expressions.length-1))});
+    } else {
+      alert('Осталось только одно выражение');
+    }
+
   }
   
   // измениние состояния - в текущем выражении убрать скрытый элемент, 
