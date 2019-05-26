@@ -14,7 +14,7 @@ class App extends Component {
       {factor1: 3, factor2: 4, hidedPart: 'result', showedPart: '', key:'3'},
       {factor1: 13, factor2: 14, hidedPart: 'factor2', showedPart: '', key:'4'},
     ],
-    tempFactor1: -1, tempFactor2: -1,
+    tempFactor1: 0, tempFactor2: 0,
     showAllExpressions: false,
   }
   showHideExpressions_handleClick = () => {
@@ -40,15 +40,20 @@ class App extends Component {
     }
     const key = `addedManually${expressions.length.toString()}`;
     const expression = {
-      factor1: this.state.tempFactor1, 
-      factor2: this.state.tempFactor2, 
+      factor1: parseInt(this.state.tempFactor1), 
+      factor2: parseInt(this.state.tempFactor2), 
       hidedPart: rndHidedPart,
       showedPart: '',
       key: key,
     }
     expressions.push(expression);
     event.preventDefault(); //не дать выполнить действие по умолчанию - обновить страницу
-    this.setState({expressions: expressions});
+    if ((expression.factor1 === 0) || (expression.factor2 === 0))
+      alert("Множитель не должен быть равен 0")
+    else if (isNaN(expression.factor1) || isNaN(expression.factor1))
+      alert("Множитель должен быть числом")
+    else
+      this.setState({ expressions: expressions });
   }
 
   render() {
@@ -83,7 +88,7 @@ class App extends Component {
           {expressions}
         </div>
         
-        <form onSubmit={this.addExpression_handleSubmit.bind(this)}>
+        <form autoComplete="off" onSubmit={this.addExpression_handleSubmit.bind(this)}>
           <span>Первый множитель</span>
           <input 
             name = "factor1"
