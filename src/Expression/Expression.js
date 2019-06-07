@@ -1,7 +1,6 @@
 import React from 'react';
 import Signs from './Signs/Signs';
 
-
 const expression = props => {
     let factor1 = props.factor1;
     let factor2 = props.factor2;
@@ -22,21 +21,11 @@ const expression = props => {
     }
     return (
         <div>
-            <Signs 
-                chars = {factor1}
-            />
-            <Signs 
-                chars = '*'
-            />
-            <Signs 
-                chars = {factor2}
-            />
-            <Signs 
-                chars = '='
-            />
-            <Signs 
-                chars = {result}
-            />
+            <Signs chars = {factor1}/>
+            <Signs chars = '*'/>
+            <Signs chars = {factor2}/>
+            <Signs chars = '='/>
+            <Signs chars = {result}/>
         </div>
     )
 }

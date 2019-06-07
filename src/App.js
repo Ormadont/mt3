@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import styles from './App.module.css';
 
-// import Signs from './2 BaseBlock/Expression/Signs/Signs' 
-import Expression from './Expression/Expression' 
+import AllExpressions from './AllExpressions/AllExpressions';
+import PointedExpression from './PointedExpression/PointedExpression';
+import AddExression from './AddExression/AddExression';
 
 class App extends Component {
   state = {
@@ -15,11 +16,11 @@ class App extends Component {
       {factor1: 13, factor2: 14, hidedPart: 'factor2', showedPart: '', key:'4'},
     ],
     tempFactor1: 0, tempFactor2: 0,
-    showAllExpressions: false,
+    showedAllExpressions: false,
   }
   showHideExpressions_handleClick = () => {
-    const doesShow = this.state.showAllExpressions;
-    this.setState({showAllExpressions: !doesShow});
+    const doesShow = this.state.showedAllExpressions;
+    this.setState({showedAllExpressions: !doesShow});
   }
   changeTempFactorX_handleChange = event => {
     (event.target.name === 'factor1') ? this.setState({tempFactor1: event.target.value}) : this.setState({tempFactor2: event.target.value}) 
@@ -57,60 +58,26 @@ class App extends Component {
   }
 
   render() {
-    let expNum = this.state.expCurNum;
-    let expressions = null;
-    if (this.state.showAllExpressions) {
-      expressions = this.state.expressions.map( expression => 
-        <Expression
-          factor1={expression.factor1}
-          factor2={expression.factor2}
-          hidedPart={expression.hidedPart}
-          key={expression.key}
-        />
-      )
-    }
-
     return (
       <div className = {styles.app}>
         <h1>Таблица умножения</h1>
-        
         <button onClick={this.showAnswer_handleClick} >Показать ответ</button>
-        <Expression 
-          factor1 = {this.state.expressions[expNum].factor1}
-          factor2 = {this.state.expressions[expNum].factor2}
-          hidedPart = {this.state.expressions[expNum].hidedPart}
-          key = {this.state.expressions[expNum].key}
-        />
+        <PointedExpression
+          expressions={this.state.expressions}
+          i={this.state.expCurNum}/>
         <button onClick={this.startAgain_handleClick}>Начать с начала</button>
-        
-        <div> 
-          <button onClick={this.showHideExpressions_handleClick}>Показать все выражения</button>
-          {expressions}
-        </div>
-        
-        <form autoComplete="off" onSubmit={this.addExpression_handleSubmit.bind(this)}>
-          <span>Первый множитель</span>
-          <input 
-            className = {styles.factorInput}
-            type="number" min="1" max="9"
-            name = "factor1"
-            value={this.state.tempFactor1} 
-            onChange={this.changeTempFactorX_handleChange.bind(this)}/><br />
-          <span>Второй множитель</span>
-          <input 
-            className = {styles.factorInput}
-            type="number" min="1" max="9"
-            name = "factor2"
-            value={this.state.tempFactor2} 
-            onChange={this.changeTempFactorX_handleChange.bind(this)}/><br />
-          <input 
-            type="submit" 
-            value="Добавить выражение"
+        <br/>
+        <AllExpressions
+          showedAll={this.state.showedAllExpressions}
+          expressions={this.state.expressions}
+          showHide={this.showHideExpressions_handleClick} />
+        <AddExression
+          factor1={this.state.tempFactor1}
+          factor2={this.state.tempFactor2}
+          addExp={this.addExpression_handleSubmit.bind(this)}
+          changeFactor={this.changeTempFactorX_handleChange.bind(this)}
           />
-        </form>
-     
         <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
-      
       </div>
     );
   }
@@ -143,10 +110,10 @@ class App extends Component {
 
   startAgain_handleClick = () => {
     const expressions = [...this.state.expressions];
-    const expNum = this.state.expCurNum;
-    if (expressions[expNum].showedPart !== '') {
-      expressions[expNum].hidedPart = expressions[expNum].showedPart;
-      expressions[expNum].showedPart = '';
+    const index = this.state.expCurNum;
+    if (expressions[index].showedPart !== '') {
+      expressions[index].hidedPart = expressions[index].showedPart;
+      expressions[index].showedPart = '';
     }
       this.setState({expressions: expressions});
       this.setState({expCurNum: Math.floor(Math.random()*this.state.expressions.length)});
