@@ -4,24 +4,23 @@ import styles from './App.module.css';
 import AllExpressions from './AllExpressions/AllExpressions';
 import PointedExpression from './PointedExpression/PointedExpression';
 import AddExression from './AddExression/AddExression';
+import {getExprs} from './stuff/modules';
 
 class App extends Component {
   state = {
     scores: 0,
-    expCurNum: Math.floor(Math.random()*4),
-    expressions: [
-      {factor1: 1, factor2: 2, hidedPart: 'factor1', showedPart: '', key:'1'},
-      {factor1: 2, factor2: 3, hidedPart: 'factor2', showedPart: '', key:'2'},
-      {factor1: 3, factor2: 4, hidedPart: 'result', showedPart: '', key:'3'},
-      {factor1: 13, factor2: 14, hidedPart: 'factor2', showedPart: '', key:'4'},
-    ],
+    expCurNum: 0,
+    expressions: getExprs(Math.floor(Math.random()*8)+1, 1, 9), // получить и установить выражения
     tempFactor1: 0, tempFactor2: 0,
     showedAllExpressions: false,
-  }
+    userInput: '',
+  }                                                                                                                                 
+  
   showHideExpressions_handleClick = () => {
     const doesShow = this.state.showedAllExpressions;
     this.setState({showedAllExpressions: !doesShow});
   }
+
   changeTempFactorX_handleChange = event => {
     (event.target.name === 'factor1') ? this.setState({tempFactor1: event.target.value}) : this.setState({tempFactor2: event.target.value}) 
   }
@@ -63,6 +62,8 @@ class App extends Component {
         <h1>Таблица умножения</h1>
         <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
         <PointedExpression
+          userInput={this.state.userInput}
+          checkAnswer={this.checkAnswer_handleChange}
           expressions={this.state.expressions}
           i={this.state.expCurNum}/>
         <button onClick={this.startAgain_handleClick}>Начать с начала</button>
@@ -118,8 +119,49 @@ class App extends Component {
       expressions[index].hidedPart = expressions[index].showedPart;
       expressions[index].showedPart = '';
     }
+      this.setState({userInput:''});
       this.setState({expressions: expressions});
       this.setState({expCurNum: Math.floor(Math.random()*this.state.expressions.length)});
+  }
+  
+  checkAnswer_handleChange = event => {
+    
+    // if (event.keyCode === 13) { // нажата клавиша Enter
+    //     alert('Требуется проверка ответа?')
+    // }
+    let rightAnswer = 0;
+    const expressions = [...this.state.expressions];
+    const index = this.state.expCurNum;
+    const expression = expressions[index];
+    switch (expression.hidedPart) {
+      case 'factor1':
+        rightAnswer = expression.factor1;
+        break;
+      case 'factor2':
+        rightAnswer = expression.factor2;
+        break;
+      case 'result':
+        rightAnswer = expression.factor1*expression.factor2;
+        break;
+      default:
+        break;
+    }
+    // правильный ответ?
+    if (parseInt(event.target.value) === rightAnswer) {
+      // ответ верный: 
+      // сбросить текущее значение ввод
+      this.setState({userInput: ''})
+      // показать ответ, 
+      // убрать поле ввода, 
+      this.showHideAnswer_handleClick();
+      // удалить данное выражение, но не сразу!
+      setTimeout(() => this.delCurExpression_handleClick(), 3000);
+    } else {
+      // верный ответ не получен, продолжаем ввод
+      this.setState({userInput: event.target.value})
+    }
+    // console.log(event.target.value);
+    
   }
 }
 

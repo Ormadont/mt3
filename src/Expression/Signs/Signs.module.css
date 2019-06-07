@@ -2,3 +2,12 @@
     display: inline-block;
     color: var(--text-color);
 }
+
+.answerInput, .userAnsweredRight {
+    margin-left: 10px;
+    width: 1.5em;
+}
+
+.userAnsweredRight {
+    background:  var(--bg-color);
+}   
