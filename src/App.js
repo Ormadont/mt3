@@ -4,20 +4,17 @@ import styles from './App.module.css';
 import AllExpressions from './AllExpressions/AllExpressions';
 import PointedExpression from './PointedExpression/PointedExpression';
 import AddExression from './AddExression/AddExression';
+import {getExprs} from './stuff/modules';
 
 class App extends Component {
   state = {
     scores: 0,
-    expCurNum: Math.floor(Math.random()*4),
-    expressions: [
-      {factor1: 1, factor2: 2, hidedPart: 'factor1', showedPart: '', key:'1'},
-      {factor1: 2, factor2: 3, hidedPart: 'factor2', showedPart: '', key:'2'},
-      {factor1: 3, factor2: 4, hidedPart: 'result', showedPart: '', key:'3'},
-      {factor1: 13, factor2: 14, hidedPart: 'factor2', showedPart: '', key:'4'},
-    ],
+    expCurNum: 0,
+    expressions: getExprs(3, 1, 10),
     tempFactor1: 0, tempFactor2: 0,
     showedAllExpressions: false,
   }
+  
   showHideExpressions_handleClick = () => {
     const doesShow = this.state.showedAllExpressions;
     this.setState({showedAllExpressions: !doesShow});
