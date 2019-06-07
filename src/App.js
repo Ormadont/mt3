@@ -61,7 +61,7 @@ class App extends Component {
     return (
       <div className = {styles.app}>
         <h1>Таблица умножения</h1>
-        <button onClick={this.showAnswer_handleClick} >Показать ответ</button>
+        <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
         <PointedExpression
           expressions={this.state.expressions}
           i={this.state.expCurNum}/>
@@ -98,14 +98,17 @@ class App extends Component {
   
   // измениние состояния - в текущем выражении убрать скрытый элемент, 
   // сохранив информацию о нём
-  showAnswer_handleClick = () => {
-    const expNum = this.state.expCurNum;
+  showHideAnswer_handleClick = () => {
+    const index = this.state.expCurNum;
     const expressions = [...this.state.expressions];
-    if (expressions[expNum].hidedPart !== 'nothing') {
-      expressions[expNum].showedPart = expressions[expNum].hidedPart;
-      expressions[expNum].hidedPart = 'nothing';
-      this.setState({expressions: expressions});
+    if (expressions[index].hidedPart !== 'nothing') {
+      expressions[index].showedPart = expressions[index].hidedPart;
+      expressions[index].hidedPart = 'nothing';
+    } else  {
+      expressions[index].hidedPart = expressions[index].showedPart;
+      expressions[index].showedPart = "";
     }
+    this.setState({expressions: expressions});
   }
 
   startAgain_handleClick = () => {
