@@ -11,22 +11,19 @@ const expression = props => {
             factor1 =
                 <Signs chars=''
                     checkAnswer={props.checkAnswer}
-                    userInput={props.userInput}
-                    rightAnswer={props.factor1} />
+                    userInput={props.userInput}/>
             break;
         case 'factor2':
             factor2 =
                 <Signs chars=''
                     checkAnswer={props.checkAnswer}
-                    userInput={props.userInput}
-                    rightAnswer={props.factor2} />
+                    userInput={props.userInput}/>
             break;
         case 'result':
             result =
                 <Signs chars=''
                     checkAnswer={props.checkAnswer}
-                    userInput={props.userInput}
-                    rightAnswer={props.factor1 * props.factor2} />
+                    userInput={props.userInput} />
             break;
         default:
 
