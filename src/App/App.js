@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from './App.module.css';
 
+import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 // import AddExression from '../AddExression/AddExression';
@@ -18,6 +19,9 @@ class App extends Component {
     showedAllExpressions: false,
     receivedRightAnswer: false,
     scores: 0,
+    options: {
+      missEnter: false,
+    }
   }             
 
   appDiv = null;
@@ -70,7 +74,7 @@ class App extends Component {
     return (
       <div className = {styles.app}
         ref = {this.setAppDiv}
-        onKeyDown={this.rightAnswerHandler} // верный ответ принимается по нажатию клавиши
+        onKeyDown={this.rightAnswerHandler_enterPress} // верный ответ принимается по нажатию клавиши
         tabIndex="0"
       >
         {/* header */}
@@ -91,6 +95,10 @@ class App extends Component {
 
         {/* footer */}
         <footer>
+          <Options 
+            missEnter={this.state.options.missEnter}
+            changeRadioButton = {this.missEnterOptionsHandler_radioButton}
+          />
           <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
           {/* <AddExression
             factor1={this.state.tempFactor1}
@@ -115,15 +123,12 @@ class App extends Component {
   delCurExpression_handleClick = () => {
     if (this.state.expressions.length > 1) {
       const expressions = [...this.state.expressions];
-      // const delEx = 
       expressions.splice(this.state.expCurNum,1);
       this.setState({expressions:expressions});
-      // console.log(`del: ${delEx[0].key}`)
       this.setState({expCurNum: Math.floor(Math.random()*(this.state.expressions.length-1))});
     } else {
       alert('Это последнее');
     }
-
   }
   
   // измениние состояния - в текущем выражении убрать скрытый элемент, 
@@ -188,28 +193,31 @@ class App extends Component {
       // отметить факт верного выражения
       this.setState({receivedRightAnswer: true})
       
-      // // удалить данное выражение, но не сразу! // условие - включено в настройках?
-      // setTimeout(() => {
-      //   this.delCurExpression_handleClick();
-      //   this.setState({receivedRightAnswer: false})
-      // }, 3000);
-
+      // удалить данное выражение, но не сразу! // условие - включено в настройках?
+      if (this.state.options.missEnter) {
+        setTimeout(() => {
+          this.delCurExpression_handleClick();
+          this.setState({ receivedRightAnswer: false })
+        }, 3000);
+      }
       this.focusAppDiv();
-
-    } else {
-      
+    } else {     
       // верный ответ не получен, продолжаем ввод
       this.setState({userInput: event.target.value})
     }
-    // console.log(event.target.value);
-    
   }
 
-  rightAnswerHandler = event => {
-    if ((event.key === "Enter") && (this.state.receivedRightAnswer)) { // добавить условие - включено в настройках?
+  rightAnswerHandler_enterPress = event => {
+    if ((event.key === "Enter") && (this.state.receivedRightAnswer) && (!this.state.options.missEnter)) { // добавить условие - включено в настройках?
       this.delCurExpression_handleClick();
       this.setState({ receivedRightAnswer: false })
     }
+  }
+
+  missEnterOptionsHandler_radioButton = e => {
+    let options = {...this.state.options};
+    (e.target.value === "miss Enter") ? options.missEnter = true : options.missEnter = false;
+    this.setState({options: options});
   }
 
 }
