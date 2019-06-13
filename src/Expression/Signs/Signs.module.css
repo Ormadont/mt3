@@ -1,11 +1,13 @@
-.main {
+.sign {
     display: inline-block;
     color: var(--text-color);
+    /* width: 1.5em; */
+    height: 1em;
 }
 
-.answerInput, .userAnsweredRight {
-    margin-left: 10px;
-    width: 1.5em;
+.answerInput {
+    height: 100%;
+    width: 1.2em;
 }
 
 .userAnsweredRight {

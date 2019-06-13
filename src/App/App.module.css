@@ -2,17 +2,16 @@
     font-family: 'Theano ModernC';
     color: var(--text-color);
     margin-top: 5px;
-    margin-left: 10px;
 }
+
+.center {
+    text-align: center;
+  }
+  
 
 @font-face {
     font-family: "Theano ModernC";
-    src: url("./stuff/fonts/13356.ttf");
+    src: url(".././stuff/fonts/13356.ttf");
   }
 
-input, button {
-    color: inherit;
-    margin-bottom: 5px;
-    padding: 5px;
-}
 

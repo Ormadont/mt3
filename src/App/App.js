@@ -1,21 +1,31 @@
 import React, { Component } from 'react';
 import styles from './App.module.css';
 
-import AllExpressions from './AllExpressions/AllExpressions';
-import PointedExpression from './PointedExpression/PointedExpression';
-import AddExression from './AddExression/AddExression';
-import {getExprs} from './stuff/modules';
+import Expression from '../Expression/Expression';
+import AllExpressions from '../AllExpressions/AllExpressions';
+// import AddExression from '../AddExression/AddExression';
+import {getExprs} from '../stuff/modules';
 
 class App extends Component {
+  
+  initMainFactor =  Math.floor(Math.random()*8)+1;
   state = {
-    scores: 0,
+    mainFactor: this.initMainFactor,
+    expressions: getExprs(this.initMainFactor, 1, 9), // получить и установить выражения
     expCurNum: 0,
-    expressions: getExprs(Math.floor(Math.random()*8)+1, 1, 9), // получить и установить выражения
+    userInput: '',
     tempFactor1: 0, tempFactor2: 0,
     showedAllExpressions: false,
-    userInput: '',
-  }                                                                                                                                 
-  
+    receivedRightAnswer: false,
+    scores: 0,
+  }             
+
+  appDiv = null;
+  setAppDiv = element => this.appDiv = element;
+  focusAppDiv = () => {
+    if (this.appDiv) this.appDiv.focus()
+  } 
+
   showHideExpressions_handleClick = () => {
     const doesShow = this.state.showedAllExpressions;
     this.setState({showedAllExpressions: !doesShow});
@@ -58,27 +68,46 @@ class App extends Component {
 
   render() {
     return (
-      <div className = {styles.app}>
-        <h1>Таблица умножения</h1>
-        <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
-        <PointedExpression
-          userInput={this.state.userInput}
-          checkAnswer={this.checkAnswer_handleChange}
-          expressions={this.state.expressions}
-          i={this.state.expCurNum}/>
-        <button onClick={this.startAgain_handleClick}>Начать с начала</button>
-        <br/>
-        <AllExpressions
-          showedAll={this.state.showedAllExpressions}
-          expressions={this.state.expressions}
-          showHide={this.showHideExpressions_handleClick} />
-        <AddExression
-          factor1={this.state.tempFactor1}
-          factor2={this.state.tempFactor2}
-          addExp={this.addExpression_handleSubmit.bind(this)}
-          changeFactor={this.changeTempFactorX_handleChange.bind(this)}
+      <div className = {styles.app}
+        ref = {this.setAppDiv}
+        onKeyDown={this.rightAnswerHandler} // верный ответ принимается по нажатию клавиши
+        tabIndex="0"
+      >
+        {/* header */}
+        <header className={styles.center}>
+          <p>Умножение на {this.state.mainFactor}</p>
+        </header>
+        
+        {/* board */}
+        <section className = {styles.center}>
+          <Expression
+            expressions={this.state.expressions}
+            expCurNum={this.state.expCurNum}
+            userInput={this.state.userInput}
+            receivedRightAnswer={this.state.receivedRightAnswer}
+            checkAnswer={this.checkAnswer_handleChange} 
           />
-        <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
+        </section>
+
+        {/* footer */}
+        <footer>
+          <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
+          {/* <AddExression
+            factor1={this.state.tempFactor1}
+            factor2={this.state.tempFactor2}
+            addExp={this.addExpression_handleSubmit.bind(this)}
+            changeFactor={this.changeTempFactorX_handleChange.bind(this)}
+          /> */}
+          {/* <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button> */}
+          <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
+          <AllExpressions
+            showedAll={this.state.showedAllExpressions}
+            expressions={this.state.expressions}
+            showHide={this.showHideExpressions_handleClick} />
+        </footer>
+
+        
+        {/* journal */}
       </div>
     );
   }
@@ -92,7 +121,7 @@ class App extends Component {
       // console.log(`del: ${delEx[0].key}`)
       this.setState({expCurNum: Math.floor(Math.random()*(this.state.expressions.length-1))});
     } else {
-      alert('Осталось только одно выражение');
+      alert('Это последнее');
     }
 
   }
@@ -112,7 +141,7 @@ class App extends Component {
     this.setState({expressions: expressions});
   }
 
-  startAgain_handleClick = () => {
+  nextEpression_handleClick = () => {
     const expressions = [...this.state.expressions];
     const index = this.state.expCurNum;
     if (expressions[index].showedPart !== '') {
@@ -151,18 +180,38 @@ class App extends Component {
       // ответ верный: 
       // сбросить текущее значение ввод
       this.setState({userInput: ''})
+      
       // показать ответ, 
       // убрать поле ввода, 
       this.showHideAnswer_handleClick();
-      // удалить данное выражение, но не сразу!
-      setTimeout(() => this.delCurExpression_handleClick(), 3000);
+      
+      // отметить факт верного выражения
+      this.setState({receivedRightAnswer: true})
+      
+      // // удалить данное выражение, но не сразу! // условие - включено в настройках?
+      // setTimeout(() => {
+      //   this.delCurExpression_handleClick();
+      //   this.setState({receivedRightAnswer: false})
+      // }, 3000);
+
+      this.focusAppDiv();
+
     } else {
+      
       // верный ответ не получен, продолжаем ввод
       this.setState({userInput: event.target.value})
     }
     // console.log(event.target.value);
     
   }
+
+  rightAnswerHandler = event => {
+    if ((event.key === "Enter") && (this.state.receivedRightAnswer)) { // добавить условие - включено в настройках?
+      this.delCurExpression_handleClick();
+      this.setState({ receivedRightAnswer: false })
+    }
+  }
+
 }
 
 export default App;

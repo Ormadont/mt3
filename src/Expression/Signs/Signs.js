@@ -7,8 +7,9 @@ const Signs = (props) => {
   {
     s =
     // '?'
-    <input
-      type="number" min="1" max="99"
+    <input 
+      autoFocus
+      type="text"
       name="answer"
       className={styles.answerInput}
       onChange={props.checkAnswer}
@@ -18,7 +19,7 @@ const Signs = (props) => {
     // console.log('*******');
   }
   return (
-    <span className={styles.main}>
+    <span className={styles.sign}>
       {s}
     </span>
   )

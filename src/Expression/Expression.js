@@ -1,12 +1,15 @@
 import React from 'react';
 import Signs from './Signs/Signs';
+import styles from './Expression.module.css';
 
 const expression = props => {
-    let factor1 = <Signs chars={props.factor1} />;
-    let factor2 = <Signs chars={props.factor2} />
-    let result = <Signs chars={props.factor1 * props.factor2} />
+    const exps = [...props.expressions];
+    const i = props.expCurNum;
+    let factor1 = <Signs chars={exps[i].factor1} />;
+    let factor2 = <Signs chars={exps[i].factor2} />
+    let result = <Signs chars={exps[i].factor1 * exps[i].factor2} />
 
-    switch (props.hidedPart) {
+    switch (exps[i].hidedPart) {
         case 'factor1':
             factor1 =
                 <Signs chars=''
@@ -29,8 +32,9 @@ const expression = props => {
 
             break;
     }
+    let style = props.receivedRightAnswer ? styles.rightExpression : null;
     return (
-        <div>
+        <div className={style}>
             {factor1}
             <Signs chars='*' />
             {factor2}

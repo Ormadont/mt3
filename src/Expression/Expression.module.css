@@ -1,0 +1,19 @@
+.rightExpression {
+    width: 100%;
+    /* animation: 3s smallBigSmall; */
+    animation-name: smallBigSmall;
+    animation-duration: 2s;
+}
+
+@keyframes smallBigSmall {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+        text-shadow: white 0 0 20px;
+    }
+    100% {
+        transform: scale(1);
+    }
+}

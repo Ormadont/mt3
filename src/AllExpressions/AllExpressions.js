@@ -4,11 +4,10 @@ import Expression from '../Expression/Expression';
 const allExpressions = props => {
     let exprs = null;
     if (props.showedAll) {
-      exprs = props.expressions.map( exp => 
+      exprs = props.expressions.map( (exp,index) => 
         <Expression
-          factor1={exp.factor1}
-          factor2={exp.factor2}
-          hidedPart={exp.hidedPart}
+          expressions={props.expressions}
+          expCurNum={index}
           key={exp.key} />
       )
     }

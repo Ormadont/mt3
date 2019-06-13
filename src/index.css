@@ -1,5 +1,7 @@
+@import-normalize; 
+
 :root {
-  font-size: 60px;
+  font-size: 100px;
   --text-color:hsla(292, 25%, 24%, 0.9);
   /* --text-color:red; */
   --bg-color: hsl(43, 89%, 84%);
@@ -14,8 +16,41 @@ body{
 * {
   margin: 0;
   padding: 0;
-  font: inherit;
+  font-family: inherit;
+  box-sizing: border-box;
 }
+
+header,footer, section {
+  padding: 5px;
+}
+
+header {
+  border-bottom: 1px solid;
+  margin-bottom: 1em;
+}
+
+footer {
+  border-top: 1px solid;
+  margin-top: 1em;
+  padding-top: 5px;
+}
+
+button, input {
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  margin-bottom: 5px;
+  padding: 5px;
+  display: block;
+}
+
+
+
+/* input {
+  border-width: 0;
+} */
 
 /* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
