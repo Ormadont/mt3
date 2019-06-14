@@ -2,6 +2,10 @@
     font-family: 'Theano ModernC';
     color: var(--text-color);
     margin-top: 5px;
+    overflow: hidden;
+}
+.app:focus {
+  outline: 0;
 }
 
 .center {

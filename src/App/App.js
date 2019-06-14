@@ -20,7 +20,8 @@ class App extends Component {
     receivedRightAnswer: false,
     scores: 0,
     options: {
-      missEnter: false,
+      show: false,
+      missEnter: true,
     }
   }             
 
@@ -80,6 +81,12 @@ class App extends Component {
         {/* header */}
         <header className={styles.center}>
           <p>Умножение на {this.state.mainFactor}</p>
+          <Options 
+            // missEnter={this.state.options.missEnter}
+            options={this.state.options}
+            // showOptions={this.state.options.show}
+            changeRadioButton = {this.missEnterOptionsHandler_radioButton}
+          />
         </header>
         
         {/* board */}
@@ -95,10 +102,7 @@ class App extends Component {
 
         {/* footer */}
         <footer>
-          <Options 
-            missEnter={this.state.options.missEnter}
-            changeRadioButton = {this.missEnterOptionsHandler_radioButton}
-          />
+
           <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
           {/* <AddExression
             factor1={this.state.tempFactor1}
