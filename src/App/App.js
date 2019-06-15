@@ -21,7 +21,7 @@ class App extends Component {
     scores: 0,
     options: {
       show: false,
-      missEnter: true,
+      missEnter: false,
     }
   }             
 
@@ -34,6 +34,18 @@ class App extends Component {
   showHideExpressions_handleClick = () => {
     const doesShow = this.state.showedAllExpressions;
     this.setState({showedAllExpressions: !doesShow});
+  }
+
+  changeMainFactor_handleChange = event => {
+    const newMainFactor = event.target.value;
+    if ((0 < newMainFactor) && (newMainFactor < 10)) {
+      this.setState({
+        userInput:'',
+        receivedRightAnswer: false,
+        mainFactor: newMainFactor,
+        expressions: getExprs(newMainFactor, 1, 9)
+      });
+     }
   }
 
   changeTempFactorX_handleChange = event => {
@@ -80,7 +92,8 @@ class App extends Component {
       >
         {/* header */}
         <header className={styles.center}>
-          <p>Умножение на {this.state.mainFactor}</p>
+          <label>Основной множитель</label>
+          <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange}></input>
           <Options 
             // missEnter={this.state.options.missEnter}
             options={this.state.options}
@@ -110,7 +123,7 @@ class App extends Component {
             addExp={this.addExpression_handleSubmit.bind(this)}
             changeFactor={this.changeTempFactorX_handleChange.bind(this)}
           /> */}
-          {/* <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button> */}
+          <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
           <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
           <AllExpressions
             showedAll={this.state.showedAllExpressions}
@@ -185,7 +198,7 @@ class App extends Component {
         break;
     }
     // правильный ответ?
-    if (parseInt(event.target.value) === rightAnswer) {
+    if (parseInt(event.target.value) === parseInt(rightAnswer)) {
       // ответ верный: 
       // сбросить текущее значение ввод
       this.setState({userInput: ''})

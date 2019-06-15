@@ -8,6 +8,10 @@
   outline: 0;
 }
 
+header input {
+  width: 1em;
+}
+
 .center {
     text-align: center;
   }
