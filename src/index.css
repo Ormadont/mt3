@@ -1,13 +1,12 @@
-@import-normalize; 
-
+@import-normalize;
 :root {
   font-size: 100px;
-  --text-color:hsla(292, 25%, 24%, 0.9);
+  --text-color: hsla(292, 25%, 24%, 0.9);
   /* --text-color:red; */
   --bg-color: hsl(43, 89%, 84%);
 }
 
-body{
+body {
   background-color: var(--bg-color);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -21,7 +20,7 @@ body{
   line-height: normal;
 }
 
-header,footer, section {
+header, footer, section {
   padding: 5px;
 }
 
@@ -41,17 +40,28 @@ button, input {
   color: inherit;
 }
 
+input {
+  height: 115%;
+  padding-top: 0.15em;
+  max-height: 1em;
+  width: 1.25em;
+  line-height: inherit;
+  background-color: inherit;
+  border-width: 4px;
+}
+
+input:focus {
+  /* outline-style: double; */
+  outline-color: rgba(255, 144, 41, 0.877);
+  outline-offset: 1px;
+  caret-color: red;
+} 
+
 button {
   margin-bottom: 5px;
   padding: 5px;
   display: block;
 }
-
-
-
-/* input {
-  border-width: 0;
-} */
 
 /* code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

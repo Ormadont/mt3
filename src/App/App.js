@@ -5,25 +5,33 @@ import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 // import AddExression from '../AddExression/AddExression';
-import {getExprs} from '../stuff/modules';
+import {getExprs, getFactors} from '../stuff/modules';
 
 class App extends Component {
-  
-  initMainFactor =  Math.floor(Math.random()*8)+1;
-  state = {
-    mainFactor: this.initMainFactor,
-    expressions: getExprs(this.initMainFactor, 1, 9), // получить и установить выражения
-    expCurNum: 0,
-    userInput: '',
-    tempFactor1: 0, tempFactor2: 0,
-    showedAllExpressions: false,
-    receivedRightAnswer: false,
-    scores: 0,
-    options: {
-      show: false,
-      missEnter: false,
+  mainFactors = [];
+  constructor(props) {
+    super(props);
+    this.state = {
+      mainFactor: -1,
+      expressions: [], // получить и установить выражения
+      expCurNum: 0,
+      userInput: '',
+      tempFactor1: 0, tempFactor2: 0,
+      showedAllExpressions: false,
+      receivedRightAnswer: false,
+      scores: 0,
+      options: {
+        show: false,
+        missEnter: false,
+        // режим с ограничением на время ?
+        // скрыите только произведения (result) - простой режим ?
+        // другие внешние виды
+      }
     }
-  }             
+    this.mainFactors = getFactors(9,1);
+    this.state.mainFactor = this.mainFactors.splice(0,1)[0]; // текущий основной множитель
+    this.state.expressions = getExprs(this.state.mainFactor, 1, 9); // выражения
+  }
 
   appDiv = null;
   setAppDiv = element => this.appDiv = element;
@@ -51,6 +59,7 @@ class App extends Component {
   changeTempFactorX_handleChange = event => {
     (event.target.name === 'factor1') ? this.setState({tempFactor1: event.target.value}) : this.setState({tempFactor2: event.target.value}) 
   }
+  
   addExpression_handleSubmit = event => {
     const expressions = [...this.state.expressions];
     let rndHidedPart = '';
@@ -93,7 +102,7 @@ class App extends Component {
         {/* header */}
         <header className={styles.center}>
           <label>Основной множитель</label>
-          <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange}></input>
+          <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
           <Options 
             // missEnter={this.state.options.missEnter}
             options={this.state.options}
@@ -143,8 +152,14 @@ class App extends Component {
       expressions.splice(this.state.expCurNum,1);
       this.setState({expressions:expressions});
       this.setState({expCurNum: Math.floor(Math.random()*(this.state.expressions.length-1))});
-    } else {
-      alert('Это последнее');
+    } else if (this.mainFactors.length>0) {
+      const mainFactor = this.mainFactors.splice(0,1)[0];
+      const expressions = getExprs(mainFactor, 1, 9);
+      this.setState({
+        mainFactor: mainFactor,
+        expressions: expressions,
+        expCurNum: Math.floor(Math.random()*(expressions.length-1)),
+      });
     }
   }
   

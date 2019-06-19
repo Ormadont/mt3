@@ -9,7 +9,7 @@
 export const getExprs = (mainFactor, leftLimit, rightLimit) => {
     const length = rightLimit - leftLimit + 1; //длина массива включая концы границ
     const arr = [];
-    const secondaryFactors=getSecondaryFactors(length, leftLimit);
+    const secondaryFactors=getFactors(length, leftLimit);
     // заполнение массива
     for (let i = 0; i < length; i++) {
         // множители, undefined
@@ -44,8 +44,10 @@ export const getExprs = (mainFactor, leftLimit, rightLimit) => {
 }
 
 // массив вспомогательных множителей
-// например, на вход - 3 и 0, тогда на выход [1, 0, 2]
-const getSecondaryFactors = (border, addin) => {
+// аргументы: первый - правая граница (левая - 0), второй - модификатор
+// например, на вход - 3 и 0, на выходе [1, 0, 2]
+// например, на вход - 4 и 2, на выходе [3, 5, 4, 2]
+export const getFactors = (border, addin) => {
     let factors=[];
     while (factors.length < border) {
         const temp = Math.floor(Math.random() * border) + addin;
@@ -56,3 +58,4 @@ const getSecondaryFactors = (border, addin) => {
     // console.log(`factors=${factors}, len=${factors.length}`);
     return factors;
 }
+

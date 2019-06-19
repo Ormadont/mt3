@@ -5,6 +5,7 @@ import styles from './Expression.module.css';
 const expression = props => {
     const exps = [...props.expressions];
     const i = props.expCurNum;
+    // console.log(`Expression.js props=`, props);
     let factor1 = <Signs chars={exps[i].factor1} />;
     let factor2 = <Signs chars={exps[i].factor2} />
     let result = <Signs chars={exps[i].factor1 * exps[i].factor2} />

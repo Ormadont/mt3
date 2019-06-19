@@ -8,8 +8,10 @@
   outline: 0;
 }
 
+/* основной множитель */
 header input {
   width: 1em;
+  margin-left: 5px;
 }
 
 .center {
