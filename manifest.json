@@ -1,0 +1,6 @@
+{
+  "short_name": "mt3",
+  "name": "Проверка знаний таблицы умножения",
+  "start_url": ".",
+  "display": "standalone"
+}
