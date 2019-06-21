@@ -8,12 +8,12 @@ import AllExpressions from '../AllExpressions/AllExpressions';
 import {getExprs, getFactors} from '../stuff/modules';
 
 class App extends Component {
-  mainFactors = [];
+  mainFactors = []; // основные множители
   constructor(props) {
     super(props);
     this.state = {
       mainFactor: -1,
-      expressions: [], // получить и установить выражения
+      expressions: [], 
       expCurNum: 0,
       userInput: '',
       tempFactor1: 0, tempFactor2: 0,
@@ -42,6 +42,14 @@ class App extends Component {
   showHideExpressions_handleClick = () => {
     const doesShow = this.state.showedAllExpressions;
     this.setState({showedAllExpressions: !doesShow});
+  }
+
+  showHideOptions_handleClick = () => {
+    const options = this.state.options;
+    options.show = !options.show;
+    this.setState({
+      options: options,
+    })
   }
 
   changeMainFactor_handleChange = event => {
@@ -104,10 +112,9 @@ class App extends Component {
           <label>Основной множитель</label>
           <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
           <Options 
-            // missEnter={this.state.options.missEnter}
             options={this.state.options}
-            // showOptions={this.state.options.show}
-            changeRadioButton = {this.missEnterOptionsHandler_radioButton}
+            changeRadioButton = {this.missEnterOptionsRadioButton_handleChange}
+            showHide = {this.showHideOptions_handleClick}
           />
         </header>
         
@@ -139,8 +146,7 @@ class App extends Component {
             expressions={this.state.expressions}
             showHide={this.showHideExpressions_handleClick} />
         </footer>
-
-        
+       
         {/* journal */}
       </div>
     );
@@ -246,7 +252,7 @@ class App extends Component {
     }
   }
 
-  missEnterOptionsHandler_radioButton = e => {
+  missEnterOptionsRadioButton_handleChange = e => {
     let options = {...this.state.options};
     (e.target.value === "miss Enter") ? options.missEnter = true : options.missEnter = false;
     this.setState({options: options});
