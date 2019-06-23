@@ -28,9 +28,13 @@
     width: 50vw;
 }
 
-.closeBtn {
-    font-size: 0.5em;
+.closeBtn{
+    font-size: 2vw;
     margin: 1vw auto;
+}
+
+.optBtn {
+    font-size: 2vw;    
 }
 
 .back {

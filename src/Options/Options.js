@@ -11,12 +11,8 @@ const options = props => {
                 stateOptions.show ?
                     <section className={styles.back}>
                         <div className={styles.header}>
-                            <h3>Настройки</h3>
+                            <h4>Настройки</h4>
                         </div>
-                        {/* <div className={styles.option}>
-                            <p>Настройка 1</p>
-                            <input defaultValue="1"/>
-                        </div> */}
                         <div className={styles.option}>
                             <span>
                                 <input
@@ -40,7 +36,9 @@ const options = props => {
                                     checked={!stateOptions.missEnter} />
                                 <label htmlFor="missEnter">ответ c клавишей Ввод</label>
                             </span>
-
+                        </div>
+                        <div className={styles.option}>
+                            <button className={styles.optBtn} onClick={props.showAddFunc}>Показать/скрыть дополнительный функционал</button>
                         </div>
                         <button className={styles.closeBtn} onClick={props.showHide}>Закрыть</button>
                     </section> : null

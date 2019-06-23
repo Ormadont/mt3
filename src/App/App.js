@@ -4,7 +4,7 @@ import styles from './App.module.css';
 import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
-// import AddExression from '../AddExression/AddExression';
+import AddExression from '../AddExression/AddExression';
 import {getExprs, getFactors} from '../stuff/modules';
 
 class App extends Component {
@@ -23,6 +23,7 @@ class App extends Component {
       options: {
         show: false,
         missEnter: false,
+        showAddFunc: false,
         // режим с ограничением на время ?
         // скрыите только произведения (result) - простой режим ?
         // другие внешние виды
@@ -31,6 +32,14 @@ class App extends Component {
     this.mainFactors = getFactors(9,1);
     this.state.mainFactor = this.mainFactors.splice(0,1)[0]; // текущий основной множитель
     this.state.expressions = getExprs(this.state.mainFactor, 1, 9); // выражения
+  }
+
+  showAddFunc_handleClick = () => {
+    const options = this.state.options;
+    options.showAddFunc = !options.showAddFunc;
+    this.setState({
+      options: options,
+    })
   }
 
   appDiv = null;
@@ -101,6 +110,24 @@ class App extends Component {
   }
 
   render() {
+    let addFucn = this.state.options.showAddFunc ? (
+      <>
+        <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
+        <AddExression
+          factor1={this.state.tempFactor1}
+          factor2={this.state.tempFactor2}
+          addExp={this.addExpression_handleSubmit.bind(this)}
+          changeFactor={this.changeTempFactorX_handleChange.bind(this)}
+        />
+        <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
+        <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
+        <AllExpressions
+          showedAll={this.state.showedAllExpressions}
+          expressions={this.state.expressions}
+          showHide={this.showHideExpressions_handleClick} />
+      </>     
+    ) : null;
+
     return (
       <div className = {styles.app}
         ref = {this.setAppDiv}
@@ -115,6 +142,7 @@ class App extends Component {
             options={this.state.options}
             changeRadioButton = {this.missEnterOptionsRadioButton_handleChange}
             showHide = {this.showHideOptions_handleClick}
+            showAddFunc = {this.showAddFunc_handleClick}
           />
         </header>
         
@@ -131,20 +159,8 @@ class App extends Component {
 
         {/* footer */}
         <footer>
-
-          <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
-          {/* <AddExression
-            factor1={this.state.tempFactor1}
-            factor2={this.state.tempFactor2}
-            addExp={this.addExpression_handleSubmit.bind(this)}
-            changeFactor={this.changeTempFactorX_handleChange.bind(this)}
-          /> */}
-          <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
-          <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
-          <AllExpressions
-            showedAll={this.state.showedAllExpressions}
-            expressions={this.state.expressions}
-            showHide={this.showHideExpressions_handleClick} />
+          {/* дополнительный функционал */}
+          {addFucn}
         </footer>
        
         {/* journal */}

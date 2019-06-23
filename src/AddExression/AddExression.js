@@ -19,6 +19,7 @@ const addExression = props => {
                 value={props.factor2}
                 onChange={props.changeFactor} /><br />
             <input
+                className={styles.addExp}
                 type="submit"
                 value="Добавить выражение"
             />

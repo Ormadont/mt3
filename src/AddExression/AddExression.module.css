@@ -7,3 +7,12 @@
     margin-left: 10px;
     width: 1em;
 }
+
+.addExp {
+    width:auto;
+    background-color: buttonface;
+    color: var(--text-color);
+    max-height: initial;
+    border-width: thin;
+    margin-bottom: 5px;
+}
