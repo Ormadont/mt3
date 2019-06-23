@@ -16,25 +16,17 @@ export const getExprs = (mainFactor, leftLimit, rightLimit) => {
         let factor1, factor2, factorX, mainFactorIsFirst;
         (Math.random() < 0.5) ? mainFactorIsFirst = false : mainFactorIsFirst = true;
         factorX = secondaryFactors.splice(0,1);
+        let hidedPart = ''; // что скрывается?
         if (mainFactorIsFirst) {
             factor1 = mainFactor;
             factor2 = factorX[0];
+            if (Math.floor(Math.random() * 2) === 0) hidedPart = 'result';
+            else hidedPart = 'factor2';
         } else {
             factor1 = factorX[0];
             factor2 = mainFactor;
-        }
-        // что скрывается?
-        let hidedPart = '';
-        switch (Math.floor(Math.random() * 3)) {
-            case 0:
-                hidedPart = 'factor1';
-                break;
-            case 1:
-                hidedPart = 'factor2';
-                break;
-            default:
-                hidedPart = 'result';
-                break;
+            if (Math.floor(Math.random() * 2) === 0) hidedPart = 'result';
+            else hidedPart = 'factor1';
         }
         // уникальный идентификатор - ключ
         const key=`${i}-${Math.floor(Math.random() * 100)}`;

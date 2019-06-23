@@ -5,7 +5,7 @@ import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
-import { getExprs, getFactors } from '../stuff/modules';
+import { getExprs as getExpressions, getFactors } from '../stuff/modules';
 
 class App extends Component {
   mainFactors = []; // основные множители
@@ -23,17 +23,23 @@ class App extends Component {
       options: {
         show: false,
         missEnter: true,
+        dontHideMainFactor: true,
         showAddFunc: false,
+        leftLimit: 1,
+        rightLimit: 9,
         // режим с ограничением на время ?
-        // скрыите только произведения (result) - простой режим ?
+        // скрытие только произведения (result) - простой режим ?
         // другие внешние виды
       }
     }
     this.mainFactors = getFactors(9, 1);
     this.state.mainFactor = this.mainFactors.splice(0, 1)[0]; // текущий основной множитель
-    this.state.expressions = getExprs(this.state.mainFactor, 1, 9); // выражения
+    this.state.expressions = getExpressions(this.state.mainFactor, this.state.options.leftLimit, this.state.options.rightLimit); // выражения
   }
 
+  // Получить новые выражения
+  getExps = mainFactor => getExpressions(mainFactor, this.state.options.leftLimit, this.state.options.rightLimit);
+  
   showAddFunc_handleClick = () => {
     const options = this.state.options;
     options.showAddFunc = !options.showAddFunc;
@@ -64,12 +70,13 @@ class App extends Component {
 
   changeMainFactor_handleChange = event => {
     const newMainFactor = event.target.value;
+    const expressions = this.getExps(newMainFactor);
     if ((0 < newMainFactor) && (newMainFactor < 10)) {
       this.setState({
         userInput: '',
         receivedRightAnswer: false,
         mainFactor: newMainFactor,
-        expressions: getExprs(newMainFactor, 1, 9)
+        expressions: expressions,
       });
     }
   }
@@ -168,10 +175,10 @@ class App extends Component {
 
         {/* footer */}
         <footer>
+          {sessionStatus}
           {/* дополнительный функционал */}
           {addFucn}
         </footer>
-        {sessionStatus}
         {/* journal */}
       </div>
     );
@@ -188,7 +195,7 @@ class App extends Component {
       });
     } else if (this.mainFactors.length > 0) {
       const mainFactor = this.mainFactors.splice(0, 1)[0];
-      const expressions = getExprs(mainFactor, 1, 9);
+      const expressions = this.getExps(mainFactor);
       const expCurNum = Math.floor(Math.random() * expressions.length);
       this.setState({
         mainFactor: mainFactor,
@@ -196,7 +203,6 @@ class App extends Component {
         expCurNum: expCurNum,
       });
     }
-
   }
 
   // измениние состояния - в текущем выражении убрать скрытый элемент, 
@@ -276,7 +282,7 @@ class App extends Component {
   }
 
   rightAnswerHandler_enterPress = event => {
-    if ((event.key === "Enter") && (this.state.receivedRightAnswer) && (!this.state.options.missEnter)) { // добавить условие - включено в настройках?
+    if ((event.key === "Enter") && (this.state.receivedRightAnswer) && (!this.state.options.missEnter)) {
       this.delCurExpression_handleClick();
       this.setState({ receivedRightAnswer: false })
     }
