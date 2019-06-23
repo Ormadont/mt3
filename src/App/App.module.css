@@ -1,27 +1,32 @@
 .app {
-    font-family: 'Theano ModernC';
-    color: var(--text-color);
-    margin-top: 5px;
-    overflow: hidden;
+  font-family: 'Theano ModernC';
+  color: var(--text-color);
+  margin-top: 5px;
+  overflow: hidden;
 }
+
 .app:focus {
   outline: 0;
 }
 
 /* основной множитель */
+
 header input {
   width: 1em;
   margin-left: 5px;
 }
 
 .center {
-    text-align: center;
-  }
-  
+  text-align: center;
+}
 
 @font-face {
-    font-family: "Theano ModernC";
-    src: url(".././stuff/fonts/13356.ttf");
-  }
+  font-family: "Theano ModernC";
+  src: url(".././stuff/fonts/13356.ttf");
+}
 
-
+.sessionStatus {
+  display: flex;
+  justify-content: space-around;
+  font-size: 0.7em;
+}

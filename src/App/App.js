@@ -5,7 +5,7 @@ import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
-import {getExprs, getFactors} from '../stuff/modules';
+import { getExprs, getFactors } from '../stuff/modules';
 
 class App extends Component {
   mainFactors = []; // основные множители
@@ -13,7 +13,7 @@ class App extends Component {
     super(props);
     this.state = {
       mainFactor: -1,
-      expressions: [], 
+      expressions: [],
       expCurNum: 0,
       userInput: '',
       tempFactor1: 0, tempFactor2: 0,
@@ -22,15 +22,15 @@ class App extends Component {
       scores: 0,
       options: {
         show: false,
-        missEnter: false,
+        missEnter: true,
         showAddFunc: false,
         // режим с ограничением на время ?
         // скрыите только произведения (result) - простой режим ?
         // другие внешние виды
       }
     }
-    this.mainFactors = getFactors(9,1);
-    this.state.mainFactor = this.mainFactors.splice(0,1)[0]; // текущий основной множитель
+    this.mainFactors = getFactors(9, 1);
+    this.state.mainFactor = this.mainFactors.splice(0, 1)[0]; // текущий основной множитель
     this.state.expressions = getExprs(this.state.mainFactor, 1, 9); // выражения
   }
 
@@ -42,15 +42,16 @@ class App extends Component {
     })
   }
 
+  // автофокус на поле ввода после получения ответа 
   appDiv = null;
   setAppDiv = element => this.appDiv = element;
   focusAppDiv = () => {
     if (this.appDiv) this.appDiv.focus()
-  } 
+  }
 
   showHideExpressions_handleClick = () => {
     const doesShow = this.state.showedAllExpressions;
-    this.setState({showedAllExpressions: !doesShow});
+    this.setState({ showedAllExpressions: !doesShow });
   }
 
   showHideOptions_handleClick = () => {
@@ -65,22 +66,22 @@ class App extends Component {
     const newMainFactor = event.target.value;
     if ((0 < newMainFactor) && (newMainFactor < 10)) {
       this.setState({
-        userInput:'',
+        userInput: '',
         receivedRightAnswer: false,
         mainFactor: newMainFactor,
         expressions: getExprs(newMainFactor, 1, 9)
       });
-     }
+    }
   }
 
   changeTempFactorX_handleChange = event => {
-    (event.target.name === 'factor1') ? this.setState({tempFactor1: event.target.value}) : this.setState({tempFactor2: event.target.value}) 
+    (event.target.name === 'factor1') ? this.setState({ tempFactor1: event.target.value }) : this.setState({ tempFactor2: event.target.value })
   }
-  
+
   addExpression_handleSubmit = event => {
     const expressions = [...this.state.expressions];
     let rndHidedPart = '';
-    switch (Math.floor(Math.random()*3)) {
+    switch (Math.floor(Math.random() * 3)) {
       case 0:
         rndHidedPart = 'factor1';
         break;
@@ -88,13 +89,13 @@ class App extends Component {
         rndHidedPart = 'factor2';
         break;
       default:
-          rndHidedPart = 'result';
+        rndHidedPart = 'result';
         break;
     }
     const key = `addedManually${expressions.length.toString()}`;
     const expression = {
-      factor1: parseInt(this.state.tempFactor1), 
-      factor2: parseInt(this.state.tempFactor2), 
+      factor1: parseInt(this.state.tempFactor1),
+      factor2: parseInt(this.state.tempFactor2),
       hidedPart: rndHidedPart,
       showedPart: '',
       key: key,
@@ -125,12 +126,20 @@ class App extends Component {
           showedAll={this.state.showedAllExpressions}
           expressions={this.state.expressions}
           showHide={this.showHideExpressions_handleClick} />
-      </>     
+      </>
     ) : null;
 
+    const sessionStatus =
+      <>
+        <div className={styles.sessionStatus}>
+          <span>Выражений: {this.state.expressions.length}</span>
+          <span>Основных множителей: {this.mainFactors.length + 1}</span>
+          {/* <span>Допущено ошибок</span> */}
+        </div>
+      </>
     return (
-      <div className = {styles.app}
-        ref = {this.setAppDiv}
+      <div className={styles.app}
+        ref={this.setAppDiv}
         onKeyDown={this.rightAnswerHandler_enterPress} // верный ответ принимается по нажатию клавиши
         tabIndex="0"
       >
@@ -138,22 +147,22 @@ class App extends Component {
         <header className={styles.center}>
           <label>Основной множитель</label>
           <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
-          <Options 
+          <Options
             options={this.state.options}
-            changeRadioButton = {this.missEnterOptionsRadioButton_handleChange}
-            showHide = {this.showHideOptions_handleClick}
-            showAddFunc = {this.showAddFunc_handleClick}
+            changeRadioButton={this.missEnterOptionsRadioButton_handleChange}
+            showHide={this.showHideOptions_handleClick}
+            showAddFunc={this.showAddFunc_handleClick}
           />
         </header>
-        
+
         {/* board */}
-        <section className = {styles.center}>
+        <section className={styles.center}>
           <Expression
             expressions={this.state.expressions}
             expCurNum={this.state.expCurNum}
             userInput={this.state.userInput}
             receivedRightAnswer={this.state.receivedRightAnswer}
-            checkAnswer={this.checkAnswer_handleChange} 
+            checkAnswer={this.checkAnswer_handleChange}
           />
         </section>
 
@@ -162,7 +171,7 @@ class App extends Component {
           {/* дополнительный функционал */}
           {addFucn}
         </footer>
-       
+        {sessionStatus}
         {/* journal */}
       </div>
     );
@@ -171,20 +180,25 @@ class App extends Component {
   delCurExpression_handleClick = () => {
     if (this.state.expressions.length > 1) {
       const expressions = [...this.state.expressions];
-      expressions.splice(this.state.expCurNum,1);
-      this.setState({expressions:expressions});
-      this.setState({expCurNum: Math.floor(Math.random()*(this.state.expressions.length-1))});
-    } else if (this.mainFactors.length>0) {
-      const mainFactor = this.mainFactors.splice(0,1)[0];
+      expressions.splice(this.state.expCurNum, 1);
+      const expCurNum = Math.floor(Math.random() * expressions.length);
+      this.setState({
+        expressions: expressions,
+        expCurNum: expCurNum,
+      });
+    } else if (this.mainFactors.length > 0) {
+      const mainFactor = this.mainFactors.splice(0, 1)[0];
       const expressions = getExprs(mainFactor, 1, 9);
+      const expCurNum = Math.floor(Math.random() * expressions.length);
       this.setState({
         mainFactor: mainFactor,
         expressions: expressions,
-        expCurNum: Math.floor(Math.random()*(expressions.length-1)),
+        expCurNum: expCurNum,
       });
     }
+
   }
-  
+
   // измениние состояния - в текущем выражении убрать скрытый элемент, 
   // сохранив информацию о нём
   showHideAnswer_handleClick = () => {
@@ -193,11 +207,11 @@ class App extends Component {
     if (expressions[index].hidedPart !== 'nothing') {
       expressions[index].showedPart = expressions[index].hidedPart;
       expressions[index].hidedPart = 'nothing';
-    } else  {
+    } else {
       expressions[index].hidedPart = expressions[index].showedPart;
       expressions[index].showedPart = "";
     }
-    this.setState({expressions: expressions});
+    this.setState({ expressions: expressions });
   }
 
   nextEpression_handleClick = () => {
@@ -207,13 +221,13 @@ class App extends Component {
       expressions[index].hidedPart = expressions[index].showedPart;
       expressions[index].showedPart = '';
     }
-      this.setState({userInput:''});
-      this.setState({expressions: expressions});
-      this.setState({expCurNum: Math.floor(Math.random()*this.state.expressions.length)});
+    this.setState({ userInput: '' });
+    this.setState({ expressions: expressions });
+    this.setState({ expCurNum: Math.floor(Math.random() * (this.state.expressions.length)) });   
   }
-  
+
   checkAnswer_handleChange = event => {
-    
+
     // if (event.keyCode === 13) { // нажата клавиша Enter
     //     alert('Требуется проверка ответа?')
     // }
@@ -229,7 +243,7 @@ class App extends Component {
         rightAnswer = expression.factor2;
         break;
       case 'result':
-        rightAnswer = expression.factor1*expression.factor2;
+        rightAnswer = expression.factor1 * expression.factor2;
         break;
       default:
         break;
@@ -238,26 +252,26 @@ class App extends Component {
     if (parseInt(event.target.value) === parseInt(rightAnswer)) {
       // ответ верный: 
       // сбросить текущее значение ввод
-      this.setState({userInput: ''})
-      
+      this.setState({ userInput: '' })
+
       // показать ответ, 
       // убрать поле ввода, 
       this.showHideAnswer_handleClick();
-      
+
       // отметить факт верного выражения
-      this.setState({receivedRightAnswer: true})
-      
+      this.setState({ receivedRightAnswer: true })
+
       // удалить данное выражение, но не сразу! // условие - включено в настройках?
       if (this.state.options.missEnter) {
         setTimeout(() => {
           this.delCurExpression_handleClick();
-          this.setState({ receivedRightAnswer: false })
+          this.setState({ receivedRightAnswer: false });
         }, 3000);
       }
       this.focusAppDiv();
-    } else {     
+    } else {
       // верный ответ не получен, продолжаем ввод
-      this.setState({userInput: event.target.value})
+      this.setState({ userInput: event.target.value })
     }
   }
 
@@ -269,9 +283,9 @@ class App extends Component {
   }
 
   missEnterOptionsRadioButton_handleChange = e => {
-    let options = {...this.state.options};
+    let options = { ...this.state.options };
     (e.target.value === "miss Enter") ? options.missEnter = true : options.missEnter = false;
-    this.setState({options: options});
+    this.setState({ options: options });
   }
 
 }
