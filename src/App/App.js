@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from './App.module.css';
 
+import ResultOfChecking from '../ResultOfChecking/ResultOfChecking';
 import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
@@ -19,15 +20,17 @@ class App extends Component {
       tempFactor1: 0, tempFactor2: 0,
       showedAllExpressions: false,
       receivedRightAnswer: false,
-      scores: 0,
+      seconds: 10, // время в режиме проверки знанний
+      checkKnowledgeIsEnd: false,
+      rightAnswerCount: 0,
+      errorsCount: 0,
       options: {
         show: false,
-        missEnter: true,
-        dontHideMainFactor: true,
+        missEnter: false,
+        checkKnowledge: false, // режим проверки знаний
         showAddFunc: false,
         leftLimit: 1,
         rightLimit: 9,
-        // режим с ограничением на время ?
         // скрытие только произведения (result) - простой режим ?
         // другие внешние виды
       }
@@ -39,7 +42,7 @@ class App extends Component {
 
   // Получить новые выражения
   getExps = mainFactor => getExpressions(mainFactor, this.state.options.leftLimit, this.state.options.rightLimit);
-  
+
   showAddFunc_handleClick = () => {
     const options = this.state.options;
     options.showAddFunc = !options.showAddFunc;
@@ -48,11 +51,12 @@ class App extends Component {
     })
   }
 
-  // автофокус на поле ввода после получения ответа 
-  appDiv = null;
-  setAppDiv = element => this.appDiv = element;
-  focusAppDiv = () => {
-    if (this.appDiv) this.appDiv.focus()
+  // автофокус на головной тэг после получения ответа
+  // только для обычного режима с паузой 
+  appRef = null;
+  setAppRef = element => this.appRef = element;
+  focusAppRef = () => {
+    if (this.appRef) this.appRef.focus();
   }
 
   showHideExpressions_handleClick = () => {
@@ -69,7 +73,12 @@ class App extends Component {
   }
 
   changeMainFactor_handleChange = event => {
-    const newMainFactor = event.target.value;
+    let newMainFactor;
+    if (event === undefined) {
+      newMainFactor = Math.floor(Math.random()*9)+1;
+    } else {
+      newMainFactor = event.target.value;
+    }
     const expressions = this.getExps(newMainFactor);
     if ((0 < newMainFactor) && (newMainFactor < 10)) {
       this.setState({
@@ -117,7 +126,49 @@ class App extends Component {
       this.setState({ expressions: expressions });
   }
 
+  nextCheck_handleClick_ResBtn = () => {
+    this.setState({
+      checkKnowledgeIsEnd: false,
+      seconds: 10,
+      errorsCount: 0,
+      rightAnswerCount: 0,
+    });
+  }
+  endCheck_handleClick_ResBtn = () => {
+    const options = {...this.state.options};
+    options.checkKnowledge = false
+    this.setState({
+      options: options,
+      checkKnowledgeIsEnd: false,
+    })
+  }
+
+  tick() {
+    if (!this.state.checkKnowledgeIsEnd) {
+      if (this.state.options.checkKnowledge && this.state.seconds>0 && !this.state.options.show) {
+        this.setState(
+          state => ({ seconds: state.seconds - 1 })
+        )
+      } else if (this.state.seconds === 0) {
+        this.setState({
+          checkKnowledgeIsEnd: true,
+        });
+        this.changeMainFactor_handleChange(); // получить новый основной множитель
+        // ?! показать статистику
+        // alert('проверка окончена');       
+      }
+    }
+  }
+
+  componentDidMount() {
+      this.interval = setInterval(this.tick.bind(this), 1000);
+  }
+  componentWillUnmount() {
+      clearInterval(this.interval);
+  }
+
   render() {
+    const timer = <span>Секунды: {this.state.seconds}</span>
     let addFucn = this.state.options.showAddFunc ? (
       <>
         <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
@@ -138,25 +189,36 @@ class App extends Component {
 
     const sessionStatus =
       <>
+        { this.state.options.checkKnowledge ? timer : null }
         <div className={styles.sessionStatus}>
           <span>Выражений: {this.state.expressions.length}</span>
           <span>Основных множителей: {this.mainFactors.length + 1}</span>
-          {/* <span>Допущено ошибок</span> */}
         </div>
       </>
     return (
-      <div className={styles.app}
-        ref={this.setAppDiv}
-        onKeyDown={this.rightAnswerHandler_enterPress} // верный ответ принимается по нажатию клавиши
+      <div className={styles.app} //AppDiv !
+        ref={this.setAppRef}
+        onKeyDown={this.nextExpr_handleKeyDown_AppDiv} // верный ответ принимается по нажатию клавиши
         tabIndex="0"
       >
+        <ResultOfChecking 
+          errorsCount={this.state.errorsCount}
+          rightAnswerCount={this.state.rightAnswerCount}
+          doesShow={this.state.checkKnowledgeIsEnd}
+          curMainFactor={this.state.mainFactor}
+          changeMainFactor={this.changeMainFactor_handleChange}
+          nextCheck={this.nextCheck_handleClick_ResBtn}
+          endCheck={this.endCheck_handleClick_ResBtn}
+        />
+
         {/* header */}
         <header className={styles.center}>
           <label>Основной множитель</label>
           <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
           <Options
             options={this.state.options}
-            changeRadioButton={this.missEnterOptionsRadioButton_handleChange}
+            missEnter_handler={this.missEnter_handleChange_optRBtn}
+            checkKnowledge_handler={this.checkKnowledgeOptionsRBtn_handleChange}
             showHide={this.showHideOptions_handleClick}
             showAddFunc={this.showAddFunc_handleClick}
           />
@@ -169,7 +231,9 @@ class App extends Component {
             expCurNum={this.state.expCurNum}
             userInput={this.state.userInput}
             receivedRightAnswer={this.state.receivedRightAnswer}
-            checkAnswer={this.checkAnswer_handleChange}
+            checkAnswer={this.checkAnswer_handleKeyUp}
+            changeAnswer={this.changeAnswer_handleChange}
+            checkKnowledgeIsEnd={this.state.checkKnowledgeIsEnd}
           />
         </section>
 
@@ -188,20 +252,23 @@ class App extends Component {
     if (this.state.expressions.length > 1) {
       const expressions = [...this.state.expressions];
       expressions.splice(this.state.expCurNum, 1);
-      const expCurNum = Math.floor(Math.random() * expressions.length);
+      const expNextNum = Math.floor(Math.random() * expressions.length);
       this.setState({
         expressions: expressions,
-        expCurNum: expCurNum,
+        expCurNum: expNextNum,
       });
-    } else if (this.mainFactors.length > 0) {
+    } else if (this.mainFactors.length > 0 && !this.state.options.checkKnowledge) {
       const mainFactor = this.mainFactors.splice(0, 1)[0];
       const expressions = this.getExps(mainFactor);
-      const expCurNum = Math.floor(Math.random() * expressions.length);
+      const expNextNum = Math.floor(Math.random() * expressions.length);
       this.setState({
         mainFactor: mainFactor,
         expressions: expressions,
-        expCurNum: expCurNum,
+        expCurNum: expNextNum,
       });
+    } else if (this.state.options.checkKnowledge) {
+      this.setState({ checkKnowledgeIsEnd: true })
+      this.changeMainFactor_handleChange(); // получить новый основной множитель
     }
   }
 
@@ -227,16 +294,18 @@ class App extends Component {
       expressions[index].hidedPart = expressions[index].showedPart;
       expressions[index].showedPart = '';
     }
-    this.setState({ userInput: '' });
-    this.setState({ expressions: expressions });
-    this.setState({ expCurNum: Math.floor(Math.random() * (this.state.expressions.length)) });   
+    const nextExpNum = Math.floor(Math.random() * (this.state.expressions.length));
+    this.setState({ 
+      userInput: '',
+      expressions: expressions,
+      expCurNum: nextExpNum,
+    });
   }
 
-  checkAnswer_handleChange = event => {
-
-    // if (event.keyCode === 13) { // нажата клавиша Enter
-    //     alert('Требуется проверка ответа?')
-    // }
+  // изменение ответа
+  changeAnswer_handleChange = event => this.setState({ userInput: event.target.value });
+  
+  getRightAnswer() {
     let rightAnswer = 0;
     const expressions = [...this.state.expressions];
     const index = this.state.expCurNum;
@@ -254,8 +323,48 @@ class App extends Component {
       default:
         break;
     }
-    // правильный ответ?
-    if (parseInt(event.target.value) === parseInt(rightAnswer)) {
+    return rightAnswer;
+  }
+
+  // проверка ответа
+  checkAnswer_handleKeyUp = event => {
+    let rightAnswer = this.getRightAnswer();
+    if (this.state.options.checkKnowledge) { // режим проверки знаний
+      if (event.key === "Enter" 
+      && parseInt(this.state.userInput) === parseInt(rightAnswer) 
+      && !this.state.checkKnowledgeIsEnd) { 
+       this.delCurExpression_handleClick();
+       this.setState({
+         userInput: '',
+       });
+       this.setState(
+        state => ({ seconds: state.seconds + 5 })
+      );
+      this.setState(
+        state => ({ rightAnswerCount: state.rightAnswerCount + 1 })
+      );
+
+      //  console.log('Режим проверки: ответ верный ', event.target.value);
+      } else if (event.key === "Enter" && !this.state.checkKnowledgeIsEnd) {
+        // ответ неправильный и нажата клавиша ввод
+
+        this.delCurExpression_handleClick();
+        this.setState({
+          userInput: '',
+        });
+        this.setState(
+          state => ({ errorsCount: state.errorsCount + 1 })
+        );
+        // ? уменьшить очки
+
+        // ? сохранить ошибку для работы над ошибками
+      } 
+    } else if (parseInt(event.target.value) === parseInt(rightAnswer)) { // правильный ответ?
+      this.showNextEpr();
+    }
+  }
+
+  showNextEpr() {
       // ответ верный: 
       // сбросить текущее значение ввод
       this.setState({ userInput: '' })
@@ -263,35 +372,47 @@ class App extends Component {
       // показать ответ, 
       // убрать поле ввода, 
       this.showHideAnswer_handleClick();
-
+      
       // отметить факт верного выражения
       this.setState({ receivedRightAnswer: true })
 
-      // удалить данное выражение, но не сразу! // условие - включено в настройках?
+      // удалить данное выражение, но не сразу!
       if (this.state.options.missEnter) {
         setTimeout(() => {
           this.delCurExpression_handleClick();
           this.setState({ receivedRightAnswer: false });
         }, 3000);
       }
-      this.focusAppDiv();
-    } else {
-      // верный ответ не получен, продолжаем ввод
-      this.setState({ userInput: event.target.value })
-    }
+      this.focusAppRef();
   }
 
-  rightAnswerHandler_enterPress = event => {
-    if ((event.key === "Enter") && (this.state.receivedRightAnswer) && (!this.state.options.missEnter)) {
+  // для режима без паузы
+  nextExpr_handleKeyDown_AppDiv = event => {
+    if ((event.key === "Enter") && (this.state.receivedRightAnswer) && (!this.state.options.missEnter) && !this.state.options.checkKnowledge) {
       this.delCurExpression_handleClick();
       this.setState({ receivedRightAnswer: false })
     }
   }
 
-  missEnterOptionsRadioButton_handleChange = e => {
+  missEnter_handleChange_optRBtn = e => {
     let options = { ...this.state.options };
     (e.target.value === "miss Enter") ? options.missEnter = true : options.missEnter = false;
     this.setState({ options: options });
+  }
+
+  checkKnowledgeOptionsRBtn_handleChange = e => {
+    let options = { ...this.state.options };
+    if (e.target.value === "start checking") {
+      options.checkKnowledge = true;
+    } else {
+      options.checkKnowledge = false;
+    }
+    this.setState({
+      options: options,
+      seconds: 10,
+      errorsCount: 0,
+      rightAnswerCount: 0,
+    })
   }
 
 }

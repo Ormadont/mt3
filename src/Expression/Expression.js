@@ -9,28 +9,24 @@ const expression = props => {
     let factor1 = <Signs chars={exps[i].factor1} />;
     let factor2 = <Signs chars={exps[i].factor2} />
     let result = <Signs chars={exps[i].factor1 * exps[i].factor2} />
-
+    const signs = 
+        <Signs chars=''
+            checkAnswer={props.checkAnswer}
+            changeAnswer={props.changeAnswer}
+            userInput={props.userInput}
+            checkKnowledgeIsEnd={props.checkKnowledgeIsEnd}
+        />;
     switch (exps[i].hidedPart) {
         case 'factor1':
-            factor1 =
-                <Signs chars=''
-                    checkAnswer={props.checkAnswer}
-                    userInput={props.userInput}/>
+            factor1 = signs;
             break;
         case 'factor2':
-            factor2 =
-                <Signs chars=''
-                    checkAnswer={props.checkAnswer}
-                    userInput={props.userInput}/>
+            factor2 = signs;
             break;
         case 'result':
-            result =
-                <Signs chars=''
-                    checkAnswer={props.checkAnswer}
-                    userInput={props.userInput} />
+            result = signs;
             break;
         default:
-
             break;
     }
     let style = props.receivedRightAnswer ? styles.rightExpression : null;
@@ -44,7 +40,5 @@ const expression = props => {
         </div>
     )
 }
-
-
 
 export default expression;

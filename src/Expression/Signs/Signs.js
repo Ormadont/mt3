@@ -1,18 +1,29 @@
-import React from 'react';
+import React, {useRef, useEffect} from 'react';
 import styles from './Signs.module.css'
 
 const Signs = (props) => {
   let s = props.chars;
-  if (!s) 
-  {
+  const inputRef = useRef(null);
+  
+  useEffect(
+    () => {
+      if (s.type ==='input' && !props.checkKnowledgeIsEnd)  {
+        inputRef.current.focus()
+      }
+    }
+  );
+
+  if (!s) {
     s =
     <input 
+      ref={inputRef}
       autoFocus
       type="text"
       name="answer"
       maxLength={2}
       className={styles.answerInput}
-      onChange={props.checkAnswer}
+      onKeyUp={props.checkAnswer}
+      onChange={props.changeAnswer}
       value={props.userInput}
       id="" />
   } 
@@ -28,11 +39,7 @@ const Signs = (props) => {
       break;
   }
 
-  // height: 110%;
-  // padding-top: 0.2em;
-  // max-height: 0.9em;
-
-  return (
+return (
     <span className={styles.sign} style={style}>
       {s}
     </span>
