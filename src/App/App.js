@@ -140,6 +140,9 @@ class App extends Component {
     this.setState({
       options: options,
       checkKnowledgeIsEnd: false,
+      seconds: 10,
+      errorsCount: 0,
+      rightAnswerCount: 0,
     })
   }
 
