@@ -410,6 +410,7 @@ class App extends Component {
     } else {
       options.checkKnowledge = false;
     }
+    this.changeMainFactor_handleChange();
     this.setState({
       options: options,
       seconds: 10,
