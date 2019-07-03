@@ -26,12 +26,10 @@ header, footer, section {
 
 header {
   border-bottom: 1px solid;
-  margin-bottom: 1em;
 }
 
 footer {
   border-top: 1px solid;
-  margin-top: 1em;
   padding-top: 5px;
 }
 

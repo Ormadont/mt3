@@ -29,9 +29,38 @@ const expression = props => {
         default:
             break;
     }
-    let style = props.receivedRightAnswer ? styles.rightExpression : null;
+    let style = props.receivedRightAnswer ? styles.rightExpression : '';
+    if (props.checkKnowledge) {
+        style += styles.cusBorder + ' ';
+        switch (props.seconds) {
+            case 9:
+            case 8:
+                style += styles.sec_5 + ' ';
+                break;
+            case 7:
+            case 6:
+                style += styles.sec_4 + ' ';
+                break;
+            case 5:
+            case 4:
+                style += styles.sec_3 + ' ';
+                break;
+            case 3:
+            case 2:
+                style += styles.sec_2 + ' ';
+                break;
+            case 1:
+            case 0:
+                style += styles.sec_1 + ' ';
+                break;
+            default:
+                break;
+        }
+    }
+    console.log('style = ', style);
+    
     return (
-        <div className={style}>
+        <div className={style + ' ' + styles.expression}>
             {factor1}
             <Signs chars='*' />
             {factor2}

@@ -3,6 +3,44 @@
     animation-name: smallBigSmall;
     animation-duration: 1s;
 }
+.cusBorder {
+    border-left-style: solid;
+    border-right-style: solid;
+    border-left-color:  rgba(0, 0, 0, 0.02);
+    border-right-color:  rgba(0, 0, 0, 0.02);
+    border-left-width: 0.5em;
+    border-right-width: 0.5em;
+}
+
+.expression {
+    padding-top: 2em;
+    padding-bottom: 2em;
+}
+
+.sec_1 {
+    border-left-color:  rgba(255, 0, 0, 0.8);
+    border-right-color: rgba(255, 0, 0, 0.8);
+}
+
+.sec_2 {
+    border-left-color: rgba(255, 109, 109, 0.6);
+    border-right-color: rgba(255, 109, 109, 0.6);
+}
+
+.sec_3 {
+    border-left-color: rgba(200, 109, 255, 0.4);
+    border-right-color: rgba(200, 109, 255, 0.4);
+}
+
+.sec_4 {
+    border-left-color: rgba(160, 109, 255, 0.2);
+    border-right-color: rgba(160, 109, 255, 0.2);
+}
+
+.sec_5 {
+    border-left-color:  rgba(120, 109, 255, 0.1);
+    border-right-color: rgba(120, 109, 255, 0.1);
+}
 
 @keyframes smallBigSmall {
     0% {

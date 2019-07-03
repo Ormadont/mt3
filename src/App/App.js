@@ -6,6 +6,7 @@ import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
+import Timer from '../Timer/Timer';
 import { getExprs as getExpressions, getFactors } from '../stuff/modules';
 
 class App extends Component {
@@ -171,7 +172,7 @@ class App extends Component {
   }
 
   render() {
-    const timer = <span>Секунды: {this.state.seconds}</span>
+    const timer = <span>{this.state.seconds}</span>
     let addFucn = this.state.options.showAddFunc ? (
       <>
         <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
@@ -192,7 +193,6 @@ class App extends Component {
 
     const sessionStatus =
       <>
-        { this.state.options.checkKnowledge ? timer : null }
         <div className={styles.sessionStatus}>
           <span>Выражений: {this.state.expressions.length}</span>
           <span>Основных множителей: {this.mainFactors.length + 1}</span>
@@ -216,6 +216,10 @@ class App extends Component {
 
         {/* header */}
         <header className={styles.center}>
+          <Timer
+            checkKnowledge = {this.state.options.checkKnowledge}
+            timer = {timer}
+          />
           <label>Основной множитель</label>
           <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
           <Options
@@ -237,6 +241,8 @@ class App extends Component {
             checkAnswer={this.checkAnswer_handleKeyUp}
             changeAnswer={this.changeAnswer_handleChange}
             checkKnowledgeIsEnd={this.state.checkKnowledgeIsEnd}
+            checkKnowledge={this.state.options.checkKnowledge}
+            seconds={this.state.seconds}
           />
         </section>
 
