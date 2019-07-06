@@ -19,7 +19,7 @@ class App extends Component {
       expCurNum: 0,
       userInput: '',
       tempFactor1: 0, tempFactor2: 0,
-      showedAllExpressions: false,
+      
       receivedRightAnswer: false,
       seconds: 10, // время в режиме проверки знанний
       checkKnowledgeIsEnd: false,
@@ -27,6 +27,7 @@ class App extends Component {
       errorsCount: 0,
       options: {
         show: false,
+        showedAllExpressions: false,
         missEnter: false,
         checkKnowledge: false, // режим проверки знаний
         showAddFunc: false,
@@ -44,13 +45,9 @@ class App extends Component {
   // Получить новые выражения
   getExps = mainFactor => getExpressions(mainFactor, this.state.options.leftLimit, this.state.options.rightLimit);
 
-  showAddFunc_handleClick = () => {
-    const options = this.state.options;
-    options.showAddFunc = !options.showAddFunc;
-    this.setState({
-      options: options,
-    })
-  }
+  showHideAddFunc_handleClick = () => this.toggleOption("showAddFunc");
+  showHideExpressions_handleClick = () => this.toggleOption("showedAllExpressions");
+  showHideOptions_handleClick = () => this.toggleOption("show");
 
   // автофокус на головной тэг после получения ответа
   // только для обычного режима с паузой 
@@ -58,19 +55,6 @@ class App extends Component {
   setAppRef = element => this.appRef = element;
   focusAppRef = () => {
     if (this.appRef) this.appRef.focus();
-  }
-
-  showHideExpressions_handleClick = () => {
-    const doesShow = this.state.showedAllExpressions;
-    this.setState({ showedAllExpressions: !doesShow });
-  }
-
-  showHideOptions_handleClick = () => {
-    const options = this.state.options;
-    options.show = !options.show;
-    this.setState({
-      options: options,
-    })
   }
 
   changeMainFactor_handleChange = event => {
@@ -135,23 +119,25 @@ class App extends Component {
       rightAnswerCount: 0,
     });
   }
+  
+  // вернуться к обычному режиму
   endCheck_handleClick_ResBtn = () => {
-    const options = {...this.state.options};
-    options.checkKnowledge = false
     this.setState({
-      options: options,
       checkKnowledgeIsEnd: false,
       seconds: 10,
       errorsCount: 0,
       rightAnswerCount: 0,
-    })
+    });
+    this.setState( prevState => ({
+      options: { ...prevState.options, checkKnowledge: false }
+    }));
   }
 
   tick() {
     if (!this.state.checkKnowledgeIsEnd) {
       if (this.state.options.checkKnowledge && this.state.seconds>0 && !this.state.options.show) {
         this.setState(
-          state => ({ seconds: state.seconds - 1 })
+          prevState => ({ seconds: prevState.seconds - 1 })
         )
       } else if (this.state.seconds === 0) {
         this.setState({
@@ -185,7 +171,7 @@ class App extends Component {
         <button onClick={this.delCurExpression_handleClick}>Удалить текущее выражение</button>
         <button onClick={this.showHideAnswer_handleClick} >Показать/скрыть ответ</button>
         <AllExpressions
-          showedAll={this.state.showedAllExpressions}
+          showedAll={this.state.options.showedAllExpressions}
           expressions={this.state.expressions}
           showHide={this.showHideExpressions_handleClick} />
       </>
@@ -225,9 +211,9 @@ class App extends Component {
           <Options
             options={this.state.options}
             missEnter_handler={this.missEnter_handleChange_optRBtn}
-            checkKnowledge_handler={this.checkKnowledgeOptionsRBtn_handleChange}
+            checkKnowledge_handler={this.checkKnowledge_handleChange_optRBtn}
             showHide={this.showHideOptions_handleClick}
-            showAddFunc={this.showAddFunc_handleClick}
+            showAddFunc={this.showHideAddFunc_handleClick}
           />
         </header>
 
@@ -303,7 +289,7 @@ class App extends Component {
       expressions[index].hidedPart = expressions[index].showedPart;
       expressions[index].showedPart = '';
     }
-    const nextExpNum = Math.floor(Math.random() * (this.state.expressions.length));
+    const nextExpNum = Math.floor(Math.random() * (expressions.length));
     this.setState({ 
       userInput: '',
       expressions: expressions,
@@ -346,24 +332,23 @@ class App extends Component {
        this.setState({
          userInput: '',
        });
-       this.setState(
-        state => ({ seconds: state.seconds + 5 })
-      );
-      this.setState(
-        state => ({ rightAnswerCount: state.rightAnswerCount + 1 })
-      );
+      this.setState(prevState => ({ 
+         seconds: prevState.seconds + 5 
+      }));
+      this.setState(prevState => ({ 
+        rightAnswerCount: prevState.rightAnswerCount + 1 
+      }));
 
       //  console.log('Режим проверки: ответ верный ', event.target.value);
       } else if (event.key === "Enter" && !this.state.checkKnowledgeIsEnd) {
         // ответ неправильный и нажата клавиша ввод
-
         this.delCurExpression_handleClick();
         this.setState({
           userInput: '',
         });
-        this.setState(
-          state => ({ errorsCount: state.errorsCount + 1 })
-        );
+        this.setState(prevState => ({ 
+          errorsCount: prevState.errorsCount + 1 
+        }));
         // ? уменьшить очки
 
         // ? сохранить ошибку для работы над ошибками
@@ -404,27 +389,35 @@ class App extends Component {
   }
 
   missEnter_handleChange_optRBtn = e => {
-    let options = { ...this.state.options };
-    (e.target.value === "miss Enter") ? options.missEnter = true : options.missEnter = false;
-    this.setState({ options: options });
+    const choice = e.target.value;
+    this.setState( prevState => ({
+      options: {...prevState.options, missEnter: choice === "miss Enter"}
+    }));
   }
 
-  checkKnowledgeOptionsRBtn_handleChange = e => {
-    let options = { ...this.state.options };
-    if (e.target.value === "start checking") {
-      options.checkKnowledge = true;
-    } else {
-      options.checkKnowledge = false;
-    }
+  checkKnowledge_handleChange_optRBtn = e => {
+    const choice = e.target.value;
+    this.setState( prevState => ({
+      options: { ...prevState.options, checkKnowledge: choice === "start checking"}
+    }))
     this.changeMainFactor_handleChange();
     this.setState({
-      options: options,
       seconds: 10,
       errorsCount: 0,
       rightAnswerCount: 0,
     })
   }
 
+  toggleOption = prop => {
+    this.setState( prevState => {
+      const options = prevState.options;
+      options[prop] = !options[prop];
+      return {
+        options: options,
+      }
+    });
+  }
 }
+
 
 export default App;
