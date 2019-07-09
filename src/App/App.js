@@ -49,14 +49,6 @@ class App extends Component {
   showHideExpressions_handleClick = () => this.toggleOption("showedAllExpressions");
   showHideOptions_handleClick = () => this.toggleOption("show");
 
-  // автофокус на головной тэг после получения ответа
-  // только для обычного режима с паузой 
-  appRef = null;
-  setAppRef = element => this.appRef = element;
-  focusAppRef = () => {
-    if (this.appRef) this.appRef.focus();
-  }
-
   changeMainFactor_handleChange = event => {
     let newMainFactor;
     if (event === undefined) {
@@ -186,7 +178,7 @@ class App extends Component {
       </>
     return (
       <div className={styles.app} //AppDiv !
-        ref={this.setAppRef}
+        ref={appRef => {this.appRef = appRef}}
         onKeyDown={this.nextExpr_handleKeyDown_AppDiv} // верный ответ принимается по нажатию клавиши
         tabIndex="0"
       >
@@ -377,7 +369,7 @@ class App extends Component {
           this.setState({ receivedRightAnswer: false });
         }, 3000);
       }
-      this.focusAppRef();
+      this.appRef.focus();
   }
 
   // для режима без паузы

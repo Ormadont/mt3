@@ -57,7 +57,7 @@ const expression = props => {
                 break;
         }
     }
-    console.log('style = ', style);
+    // console.log('style = ', style);
     
     return (
         <div className={style + ' ' + styles.expression}>
