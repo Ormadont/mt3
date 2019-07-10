@@ -30,3 +30,16 @@ header input {
   justify-content: space-around;
   font-size: 0.7em;
 }
+
+/* Настройки */
+.btn {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  font-size: 3vw;
+}
+
+.closeBtn{
+  font-size: 2vw;
+  margin: 1vw auto;
+}

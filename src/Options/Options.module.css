@@ -3,12 +3,7 @@
     height: 0.5em;
     margin-left: 5px;
 }
-.btn {
-    position: absolute;
-    right: 5px;
-    top: 5px;
-    font-size: 3vw;
-}
+
 
 .header, .option {
     margin: 1vw auto;
@@ -28,11 +23,6 @@
     width: 50vw;
 }
 
-.closeBtn{
-    font-size: 2vw;
-    margin: 1vw auto;
-}
-
 .optBtn {
     font-size: 2vw;    
 }
@@ -49,3 +39,4 @@
     z-index: 1;
     background-color: hsla(0, 0%, 21%, 0.76);
 }
+

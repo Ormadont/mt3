@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styles from './App.module.css';
 
+import BackgroundScene from '../backgroundScene/backgroundScene';
 import ResultOfChecking from '../ResultOfChecking/ResultOfChecking';
 import Options from '../Options/Options';
 import Expression from '../Expression/Expression';
@@ -19,7 +20,7 @@ class App extends Component {
       expCurNum: 0,
       userInput: '',
       tempFactor1: 0, tempFactor2: 0,
-      
+
       receivedRightAnswer: false,
       seconds: 10, // время в режиме проверки знанний
       checkKnowledgeIsEnd: false,
@@ -52,7 +53,7 @@ class App extends Component {
   changeMainFactor_handleChange = event => {
     let newMainFactor;
     if (event === undefined) {
-      newMainFactor = Math.floor(Math.random()*9)+1;
+      newMainFactor = Math.floor(Math.random() * 9) + 1;
     } else {
       newMainFactor = event.target.value;
     }
@@ -111,7 +112,7 @@ class App extends Component {
       rightAnswerCount: 0,
     });
   }
-  
+
   // вернуться к обычному режиму
   endCheck_handleClick_ResBtn = () => {
     this.setState({
@@ -120,14 +121,14 @@ class App extends Component {
       errorsCount: 0,
       rightAnswerCount: 0,
     });
-    this.setState( prevState => ({
+    this.setState(prevState => ({
       options: { ...prevState.options, checkKnowledge: false }
     }));
   }
 
   tick() {
     if (!this.state.checkKnowledgeIsEnd) {
-      if (this.state.options.checkKnowledge && this.state.seconds>0 && !this.state.options.show) {
+      if (this.state.options.checkKnowledge && this.state.seconds > 0 && !this.state.options.show) {
         this.setState(
           prevState => ({ seconds: prevState.seconds - 1 })
         )
@@ -143,14 +144,28 @@ class App extends Component {
   }
 
   componentDidMount() {
-      this.interval = setInterval(this.tick.bind(this), 1000);
+    this.interval = setInterval(this.tick.bind(this), 1000);
   }
   componentWillUnmount() {
-      clearInterval(this.interval);
+    clearInterval(this.interval);
   }
 
   render() {
     const timer = <span>{this.state.seconds}</span>
+    const options =
+      <>
+        <button className={styles.btn} onClick={this.showHideOptions_handleClick}>Настройки</button>
+        {this.state.options.show ?
+          <BackgroundScene>
+            <Options
+              options={this.state.options}
+              missEnter_handler={this.missEnter_handleChange_optRBtn}
+              checkKnowledge_handler={this.checkKnowledge_handleChange_optRBtn}
+              showAddFunc={this.showHideAddFunc_handleClick}
+            />
+            <button className={styles.closeBtn} onClick={this.showHideOptions_handleClick}>Закрыть</button>
+          </BackgroundScene> : null}
+      </>
     let addFucn = this.state.options.showAddFunc ? (
       <>
         <button onClick={this.nextEpression_handleClick}>Другое выражение</button>
@@ -168,7 +183,22 @@ class App extends Component {
           showHide={this.showHideExpressions_handleClick} />
       </>
     ) : null;
+    const resultsOfChecking =
+      <>
+        {this.state.checkKnowledgeIsEnd ?
+          <BackgroundScene>
+            <ResultOfChecking
+              errorsCount={this.state.errorsCount}
+              rightAnswerCount={this.state.rightAnswerCount}
 
+              curMainFactor={this.state.mainFactor}
+              changeMainFactor={this.changeMainFactor_handleChange}
+              nextCheck={this.nextCheck_handleClick_ResBtn}
+              endCheck={this.endCheck_handleClick_ResBtn}
+            /> 
+          </BackgroundScene>
+        : null}
+      </>
     const sessionStatus =
       <>
         <div className={styles.sessionStatus}>
@@ -177,36 +207,21 @@ class App extends Component {
         </div>
       </>
     return (
-      <div className={styles.app} //AppDiv !
-        ref={appRef => {this.appRef = appRef}}
-        onKeyDown={this.nextExpr_handleKeyDown_AppDiv} // верный ответ принимается по нажатию клавиши
-        tabIndex="0"
-      >
-        <ResultOfChecking 
-          errorsCount={this.state.errorsCount}
-          rightAnswerCount={this.state.rightAnswerCount}
-          doesShow={this.state.checkKnowledgeIsEnd}
-          curMainFactor={this.state.mainFactor}
-          changeMainFactor={this.changeMainFactor_handleChange}
-          nextCheck={this.nextCheck_handleClick_ResBtn}
-          endCheck={this.endCheck_handleClick_ResBtn}
-        />
-
+        <div className={styles.app} //AppDiv !
+          ref={appRef => { this.appRef = appRef }}
+          onKeyDown={this.nextExpr_handleKeyDown_AppDiv} // верный ответ принимается по нажатию клавиши
+          tabIndex="0"
+        >
+        {resultsOfChecking}
         {/* header */}
         <header className={styles.center}>
           <Timer
-            checkKnowledge = {this.state.options.checkKnowledge}
-            timer = {timer}
+            checkKnowledge={this.state.options.checkKnowledge}
+            timer={timer}
           />
           <label>Основной множитель</label>
           <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
-          <Options
-            options={this.state.options}
-            missEnter_handler={this.missEnter_handleChange_optRBtn}
-            checkKnowledge_handler={this.checkKnowledge_handleChange_optRBtn}
-            showHide={this.showHideOptions_handleClick}
-            showAddFunc={this.showHideAddFunc_handleClick}
-          />
+          {options}
         </header>
 
         {/* board */}
@@ -282,7 +297,7 @@ class App extends Component {
       expressions[index].showedPart = '';
     }
     const nextExpNum = Math.floor(Math.random() * (expressions.length));
-    this.setState({ 
+    this.setState({
       userInput: '',
       expressions: expressions,
       expCurNum: nextExpNum,
@@ -291,7 +306,7 @@ class App extends Component {
 
   // изменение ответа
   changeAnswer_handleChange = event => this.setState({ userInput: event.target.value });
-  
+
   getRightAnswer() {
     let rightAnswer = 0;
     const expressions = [...this.state.expressions];
@@ -317,59 +332,59 @@ class App extends Component {
   checkAnswer_handleKeyUp = event => {
     let rightAnswer = this.getRightAnswer();
     if (this.state.options.checkKnowledge) { // режим проверки знаний
-      if (event.key === "Enter" 
-      && parseInt(this.state.userInput) === parseInt(rightAnswer) 
-      && !this.state.checkKnowledgeIsEnd) { 
-       this.delCurExpression_handleClick();
-       this.setState({
-         userInput: '',
-       });
-      this.setState(prevState => ({ 
-         seconds: prevState.seconds + 5 
-      }));
-      this.setState(prevState => ({ 
-        rightAnswerCount: prevState.rightAnswerCount + 1 
-      }));
+      if (event.key === "Enter"
+        && parseInt(this.state.userInput) === parseInt(rightAnswer)
+        && !this.state.checkKnowledgeIsEnd) {
+        this.delCurExpression_handleClick();
+        this.setState({
+          userInput: '',
+        });
+        this.setState(prevState => ({
+          seconds: prevState.seconds + 5
+        }));
+        this.setState(prevState => ({
+          rightAnswerCount: prevState.rightAnswerCount + 1
+        }));
 
-      //  console.log('Режим проверки: ответ верный ', event.target.value);
+        //  console.log('Режим проверки: ответ верный ', event.target.value);
       } else if (event.key === "Enter" && !this.state.checkKnowledgeIsEnd) {
         // ответ неправильный и нажата клавиша ввод
         this.delCurExpression_handleClick();
         this.setState({
           userInput: '',
         });
-        this.setState(prevState => ({ 
-          errorsCount: prevState.errorsCount + 1 
+        this.setState(prevState => ({
+          errorsCount: prevState.errorsCount + 1
         }));
         // ? уменьшить очки
 
         // ? сохранить ошибку для работы над ошибками
-      } 
+      }
     } else if (parseInt(event.target.value) === parseInt(rightAnswer)) { // правильный ответ?
       this.showNextEpr();
     }
   }
 
   showNextEpr() {
-      // ответ верный: 
-      // сбросить текущее значение ввод
-      this.setState({ userInput: '' })
+    // ответ верный: 
+    // сбросить текущее значение ввод
+    this.setState({ userInput: '' })
 
-      // показать ответ, 
-      // убрать поле ввода, 
-      this.showHideAnswer_handleClick();
-      
-      // отметить факт верного выражения
-      this.setState({ receivedRightAnswer: true })
+    // показать ответ, 
+    // убрать поле ввода, 
+    this.showHideAnswer_handleClick();
 
-      // удалить данное выражение, но не сразу!
-      if (this.state.options.missEnter) {
-        setTimeout(() => {
-          this.delCurExpression_handleClick();
-          this.setState({ receivedRightAnswer: false });
-        }, 3000);
-      }
-      this.appRef.focus();
+    // отметить факт верного выражения
+    this.setState({ receivedRightAnswer: true })
+
+    // удалить данное выражение, но не сразу!
+    if (this.state.options.missEnter) {
+      setTimeout(() => {
+        this.delCurExpression_handleClick();
+        this.setState({ receivedRightAnswer: false });
+      }, 3000);
+    }
+    this.appRef.focus();
   }
 
   // для режима без паузы
@@ -382,15 +397,15 @@ class App extends Component {
 
   missEnter_handleChange_optRBtn = e => {
     const choice = e.target.value;
-    this.setState( prevState => ({
-      options: {...prevState.options, missEnter: choice === "miss Enter"}
+    this.setState(prevState => ({
+      options: { ...prevState.options, missEnter: choice === "miss Enter" }
     }));
   }
 
   checkKnowledge_handleChange_optRBtn = e => {
     const choice = e.target.value;
-    this.setState( prevState => ({
-      options: { ...prevState.options, checkKnowledge: choice === "start checking"}
+    this.setState(prevState => ({
+      options: { ...prevState.options, checkKnowledge: choice === "start checking" }
     }))
     this.changeMainFactor_handleChange();
     this.setState({
@@ -401,7 +416,7 @@ class App extends Component {
   }
 
   toggleOption = prop => {
-    this.setState( prevState => {
+    this.setState(prevState => {
       const options = prevState.options;
       options[prop] = !options[prop];
       return {
