@@ -1,6 +1,7 @@
 import React from 'react';
 import Signs from './Signs/Signs';
 import styles from './Expression.module.css';
+import OptionsContext from '../Context/OptionsContext';
 
 const expression = props => {
     const exps = [...props.expressions];
@@ -9,7 +10,7 @@ const expression = props => {
     let factor1 = <Signs chars={exps[i].factor1} />;
     let factor2 = <Signs chars={exps[i].factor2} />
     let result = <Signs chars={exps[i].factor1 * exps[i].factor2} />
-    const signs = 
+    const signs =
         <Signs chars=''
             checkAnswer={props.checkAnswer}
             changeAnswer={props.changeAnswer}
@@ -58,15 +59,20 @@ const expression = props => {
         }
     }
     // console.log('style = ', style);
-    
+
     return (
-        <div className={style + ' ' + styles.expression}>
-            {factor1}
-            <Signs chars='*' />
-            {factor2}
-            <Signs chars='=' />
-            {result}
-        </div>
+        <OptionsContext.Consumer>{context => {
+            return (
+                <div className={style + ' ' + styles.expression}>
+                    {factor1}
+                    <Signs chars='*' />
+                    {factor2}
+                    <Signs chars='=' />
+                    {result}
+                    {console.log("context.mobileMode=", context.mobileMode)}
+                </div>
+            )
+        }}</OptionsContext.Consumer>
     )
 }
 

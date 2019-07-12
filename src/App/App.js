@@ -9,6 +9,7 @@ import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
 import Timer from '../Timer/Timer';
 import { getExprs as getExpressions, getFactors } from '../stuff/modules';
+import OptionsContext from '../Context/OptionsContext';
 
 class App extends Component {
   mainFactors = []; // основные множители
@@ -20,7 +21,6 @@ class App extends Component {
       expCurNum: 0,
       userInput: '',
       tempFactor1: 0, tempFactor2: 0,
-
       receivedRightAnswer: false,
       seconds: 10, // время в режиме проверки знанний
       checkKnowledgeIsEnd: false,
@@ -28,13 +28,13 @@ class App extends Component {
       errorsCount: 0,
       options: {
         show: false,
+        mobileMode: false,
         showedAllExpressions: false,
         missEnter: false,
         checkKnowledge: false, // режим проверки знаний
         showAddFunc: false,
         leftLimit: 1,
         rightLimit: 9,
-        // скрытие только произведения (result) - простой режим ?
         // другие внешние виды
       }
     }
@@ -226,17 +226,19 @@ class App extends Component {
 
         {/* board */}
         <section className={styles.center}>
-          <Expression
-            expressions={this.state.expressions}
-            expCurNum={this.state.expCurNum}
-            userInput={this.state.userInput}
-            receivedRightAnswer={this.state.receivedRightAnswer}
-            checkAnswer={this.checkAnswer_handleKeyUp}
-            changeAnswer={this.changeAnswer_handleChange}
-            checkKnowledgeIsEnd={this.state.checkKnowledgeIsEnd}
-            checkKnowledge={this.state.options.checkKnowledge}
-            seconds={this.state.seconds}
-          />
+          <OptionsContext.Provider value={{mobileMode:this.state.options.mobileMode}}>
+            <Expression
+              expressions={this.state.expressions}
+              expCurNum={this.state.expCurNum}
+              userInput={this.state.userInput}
+              receivedRightAnswer={this.state.receivedRightAnswer}
+              checkAnswer={this.checkAnswer_handleKeyUp}
+              changeAnswer={this.changeAnswer_handleChange}
+              checkKnowledgeIsEnd={this.state.checkKnowledgeIsEnd}
+              checkKnowledge={this.state.options.checkKnowledge}
+              seconds={this.state.seconds}
+            />
+          </OptionsContext.Provider>
         </section>
 
         {/* footer */}
