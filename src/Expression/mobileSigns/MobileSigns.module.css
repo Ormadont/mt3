@@ -1,0 +1,46 @@
+.downLeft, .downRight, .downCenter, .default, .upLeft, .upRight, .upCenter {
+  display: inline-block;
+  padding: 0.2rem;
+  height: 1.2rem;
+  width: 1.2rem;
+  color: var(--bg-color);
+  border: 1px outset var(--text-color);
+  border-radius: 50%;
+  background-color: var(--text-color);
+  text-align: center;
+  /* font-size: 69%; */
+}
+
+.upLeft, .upRight, .upCenter{
+  position: relative;
+  top: -1.8em;
+}
+
+.upLeft{
+  left: 2em;
+}
+
+.upCenter{
+  left: 4em;
+}
+
+.upRight{
+  left: 6em;
+}
+
+.downLeft, .downRight, .downCenter{
+  position: relative;
+  bottom: -1.8em;
+}
+
+.downLeft{
+  right: 5.5em;
+}
+
+.downCenter{
+  right: 3.5em;
+}
+
+.downRight{
+  right: 1.5em;
+}

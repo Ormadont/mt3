@@ -35,8 +35,8 @@ export const getExprs = (mainFactor, leftLimit, rightLimit) => {
     return arr;
 }
 
-// массив вспомогательных множителей
-// аргументы: первый - правая граница (левая - 0), второй - модификатор
+// массив вспомогательных множителей из целых чисел
+// аргументы: первый - правая граница (левая - 0) и количество множителей, второй - модификатор
 // например, на вход - 3 и 0, на выходе [1, 0, 2]
 // например, на вход - 4 и 2, на выходе [3, 5, 4, 2]
 export const getFactors = (border, addin) => {
@@ -51,3 +51,52 @@ export const getFactors = (border, addin) => {
     return factors;
 }
 
+//перемешать произвольный массив
+export function mixUp(origArray) {
+    const mixUpArray = [];
+    while (origArray.length > 0) {
+        const randomIndex = Math.floor(Math.random() * origArray.length); //рандомный индекс первого массива
+        const rand_element = origArray.splice(randomIndex, 1) //удалённый элемент (массив) первого массива для второго массива
+        mixUpArray.push(rand_element[0]); //добавляем элемент в новый массив
+    }
+    return mixUpArray;
+}
+
+export var isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+};
+
+// Used to detect whether the users browser is an mobile browser
+function isMobile_alt() {
+    ///<summary>Detecting whether the browser is a mobile browser or desktop browser</summary>
+    ///<returns>A boolean value indicating whether the browser is a mobile browser or not</returns>
+
+    if (sessionStorage.desktop) // desktop storage 
+        return false;
+    else if (localStorage.mobile) // mobile storage
+        return true;
+
+    // alternative
+    var mobile = ['iphone','ipad','android','blackberry','nokia','opera mini','windows mobile','windows phone','iemobile']; 
+    for (var i in mobile) if (navigator.userAgent.toLowerCase().indexOf(mobile[i].toLowerCase()) > 0) return true;
+
+    // nothing found.. assume desktop
+    return false;
+}

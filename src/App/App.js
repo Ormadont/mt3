@@ -8,8 +8,7 @@ import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
 import Timer from '../Timer/Timer';
-import { getExprs as getExpressions, getFactors } from '../stuff/modules';
-import OptionsContext from '../Context/OptionsContext';
+import { getExprs as getExpressions, getFactors, isMobile } from '../stuff/modules';
 
 class App extends Component {
   mainFactors = []; // основные множители
@@ -28,7 +27,7 @@ class App extends Component {
       errorsCount: 0,
       options: {
         show: false,
-        mobileMode: false,
+        isMobileMode: true,
         showedAllExpressions: false,
         missEnter: false,
         checkKnowledge: false, // режим проверки знаний
@@ -41,6 +40,7 @@ class App extends Component {
     this.mainFactors = getFactors(9, 1);
     this.state.mainFactor = this.mainFactors.splice(0, 1)[0]; // текущий основной множитель
     this.state.expressions = getExpressions(this.state.mainFactor, this.state.options.leftLimit, this.state.options.rightLimit); // выражения
+    this.state.options.isMobileMode = isMobile.any() === null ? false : true;
   }
 
   // Получить новые выражения
@@ -143,6 +143,26 @@ class App extends Component {
     }
   }
 
+  checkMobAnswer_handleClick = answer => {
+    const rightAnswer = this.getRightAnswer();
+    // console.log(this.state);
+    // console.log(answer);
+    
+    if (rightAnswer === answer) {  
+      // console.log("answer right");  
+    
+    this.setState({ receivedRightAnswer: true });
+
+    this.showHideAnswer_handleClick();
+
+    setTimeout(() => {
+      this.delCurExpression_handleClick();
+      this.setState({ receivedRightAnswer: false });
+    }, 3000);
+      
+    }
+  }
+
   componentDidMount() {
     this.interval = setInterval(this.tick.bind(this), 1000);
   }
@@ -226,19 +246,21 @@ class App extends Component {
 
         {/* board */}
         <section className={styles.center}>
-          <OptionsContext.Provider value={{mobileMode:this.state.options.mobileMode}}>
             <Expression
               expressions={this.state.expressions}
               expCurNum={this.state.expCurNum}
+              mainFactor={this.state.mainFactor}
               userInput={this.state.userInput}
               receivedRightAnswer={this.state.receivedRightAnswer}
-              checkAnswer={this.checkAnswer_handleKeyUp}
+              checkAnswer={this.checkAnswer_handleKeyUp_input}
               changeAnswer={this.changeAnswer_handleChange}
               checkKnowledgeIsEnd={this.state.checkKnowledgeIsEnd}
               checkKnowledge={this.state.options.checkKnowledge}
               seconds={this.state.seconds}
+              isMobileMode={this.state.options.isMobileMode}
+              checkMobAnswer={this.checkMobAnswer_handleClick}
             />
-          </OptionsContext.Provider>
+
         </section>
 
         {/* footer */}
@@ -331,38 +353,31 @@ class App extends Component {
   }
 
   // проверка ответа
-  checkAnswer_handleKeyUp = event => {
+  checkAnswer_handleKeyUp_input = event => {
     let rightAnswer = this.getRightAnswer();
     if (this.state.options.checkKnowledge) { // режим проверки знаний
       if (event.key === "Enter"
-        && parseInt(this.state.userInput) === parseInt(rightAnswer)
+        && parseInt(this.state.userInput) === parseInt(rightAnswer)  // получен верный ответ
         && !this.state.checkKnowledgeIsEnd) {
         this.delCurExpression_handleClick();
-        this.setState({
+        this.setState(prevState => ({
+          seconds: prevState.seconds + 5,
           userInput: '',
-        });
-        this.setState(prevState => ({
-          seconds: prevState.seconds + 5
+          rightAnswerCount: prevState.rightAnswerCount + 1,
         }));
-        this.setState(prevState => ({
-          rightAnswerCount: prevState.rightAnswerCount + 1
-        }));
-
         //  console.log('Режим проверки: ответ верный ', event.target.value);
       } else if (event.key === "Enter" && !this.state.checkKnowledgeIsEnd) {
         // ответ неправильный и нажата клавиша ввод
         this.delCurExpression_handleClick();
-        this.setState({
-          userInput: '',
-        });
         this.setState(prevState => ({
-          errorsCount: prevState.errorsCount + 1
+          errorsCount: prevState.errorsCount + 1,
+          userInput: '',
         }));
         // ? уменьшить очки
 
         // ? сохранить ошибку для работы над ошибками
       }
-    } else if (parseInt(event.target.value) === parseInt(rightAnswer)) { // правильный ответ?
+    } else if (parseInt(event.target.value) === parseInt(rightAnswer)) { // правильный ответ получен
       this.showNextEpr();
     }
   }
@@ -376,7 +391,7 @@ class App extends Component {
     // убрать поле ввода, 
     this.showHideAnswer_handleClick();
 
-    // отметить факт верного выражения
+    // отметить факт получения верного ответа
     this.setState({ receivedRightAnswer: true })
 
     // удалить данное выражение, но не сразу!

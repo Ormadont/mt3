@@ -13,7 +13,7 @@ const Signs = (props) => {
     }
   );
 
-  if (!s) {
+  if (s==="") {
     s =
     <input 
       ref={inputRef}

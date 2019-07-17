@@ -1,0 +1,6 @@
+.answers {
+  display: inline-flex;
+  width: 4rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
