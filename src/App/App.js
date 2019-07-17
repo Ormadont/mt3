@@ -9,6 +9,7 @@ import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
 import Timer from '../Timer/Timer';
 import { getExprs as getExpressions, getFactors, isMobile } from '../stuff/modules';
+import MobMainFactors from '../MobMainFactors/MobMainFactors';
 
 class App extends Component {
   mainFactors = []; // основные множители
@@ -57,6 +58,10 @@ class App extends Component {
     } else {
       newMainFactor = event.target.value;
     }
+    this.getSetNewMainFactor(newMainFactor);
+  }
+
+  getSetNewMainFactor(newMainFactor) {
     const expressions = this.getExps(newMainFactor);
     if ((0 < newMainFactor) && (newMainFactor < 10)) {
       this.setState({
@@ -163,6 +168,10 @@ class App extends Component {
     }
   }
 
+  changeMainFactor_handleClick_mobile = selectedMainFactor => {
+    this.getSetNewMainFactor(selectedMainFactor);
+  }
+
   componentDidMount() {
     this.interval = setInterval(this.tick.bind(this), 1000);
   }
@@ -219,6 +228,23 @@ class App extends Component {
           </BackgroundScene>
         : null}
       </>
+    const mainFactor =
+      <>
+        <label>Основной множитель</label>
+        {
+          this.state.options.isMobileMode ?
+            <MobMainFactors 
+              mainFactor={this.state.mainFactor}
+              mainFactors={this.state.mainFactors}
+              changeMainFactor={this.changeMainFactor_handleClick_mobile}
+            /> :
+            <input 
+              value={this.state.mainFactor} 
+              onChange={this.changeMainFactor_handleChange} 
+              type="number"
+            ></input>
+        }
+      </>
     const sessionStatus =
       <>
         <div className={styles.sessionStatus}>
@@ -239,11 +265,9 @@ class App extends Component {
             checkKnowledge={this.state.options.checkKnowledge}
             timer={timer}
           />
-          <label>Основной множитель</label>
-          <input value={this.state.mainFactor} onChange={this.changeMainFactor_handleChange} type="number"></input>
           {options}
+          {mainFactor}
         </header>
-
         {/* board */}
         <section className={styles.center}>
             <Expression

@@ -1,0 +1,16 @@
+.factors {
+    height: 2rem;
+
+    position: fixed;
+    display: flex;
+    top: 0;
+    width: 100%;
+    min-height: 5rem;
+    max-height: 10rem;
+    border-radius: 0.2rem;
+    background-color: hsla(0, 0%, 0%, 0.85);
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    z-index: 1;
+}
