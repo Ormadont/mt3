@@ -2,7 +2,6 @@ import React from 'react';
 import Signs from './Signs/Signs';
 import styles from './Expression.module.css';
 import MobileSigns from './mobileSigns/MobileSigns';
-import {getFactors, mixUp} from '../stuff/modules';
 // import MobileAnswers from './MobileAnswers/MobileAnswers';
 
 const expression = props => {
@@ -12,25 +11,22 @@ const expression = props => {
     let factor2 = <Signs chars={exps[i].factor2} />
     let result = <Signs chars={exps[i].factor1 * exps[i].factor2} />
     const signs = props.isMobileMode ?
-        <MobileSigns position='default' /> :
+        <MobileSigns/> :
         <Signs chars=''
             checkAnswer={props.checkAnswer}
             changeAnswer={props.changeAnswer}
             userInput={props.userInput}
             checkKnowledgeIsEnd={props.checkKnowledgeIsEnd}
         />;
-    let rightAnswer;
+
     switch (exps[i].hidedPart) {
         case 'factor1':
-            rightAnswer=exps[i].factor1;
             factor1 = signs;
             break;
         case 'factor2':
-            rightAnswer=exps[i].factor2;
             factor2 = signs;
             break;
         case 'result':
-            rightAnswer=exps[i].factor1 * exps[i].factor2;
             result = signs;
             break;
         default:
@@ -65,25 +61,16 @@ const expression = props => {
         }
     }
     // const variantsCount = 6; // количество вариантов ответа
-    const mainFactor=props.mainFactor;
-    let answers = getFactors(6,1).map(x=>x*mainFactor);
-    // Если набор ответов не содержит правильного ответа, 
-    // то убрать один ответ, добавить правильный и перемешать.
-    if (!answers.find(el=>el===rightAnswer)) { 
-      answers.shift();
-      answers.push(rightAnswer);
-      answers = mixUp(answers);
-    }
 
-    const topAnswers = props.isMobileMode && !props.receivedRightAnswer ? (<>
-        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="upLeft" chars={answers[0]}/>
-        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="upCenter" chars={answers[1]}/>
-        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="upRight" chars={answers[2]}/>
+const topAnswers = props.isMobileMode && !props.receivedRightAnswer ? (<>
+        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="upLeft" chars={props.answers[0]}/>
+        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="upCenter" chars={props.answers[1]}/>
+        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="upRight" chars={props.answers[2]}/>
     </>): null;
     const bottomAnswers = props.isMobileMode && !props.receivedRightAnswer ? (<>
-        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="downLeft" chars={answers[3]}/>
-        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="downCenter" chars={answers[4]}/>
-        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="downRight" chars={answers[5]}/>
+        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="downLeft" chars={props.answers[3]}/>
+        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="downCenter" chars={props.answers[4]}/>
+        <MobileSigns checkMobAnswer={props.checkMobAnswer} position="downRight" chars={props.answers[5]}/>
     </>): null;
     const onlyExpression = (<>
             {factor1}

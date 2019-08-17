@@ -4,20 +4,26 @@ import styles from './MobileSigns.module.css';
 const mobileSigns = props => {
   let signs = props.chars;
   let style = {};
-  let onClickFunc = () => props.checkMobAnswer(props.chars);
+  // changeMainFactor
+  let onClickFunc = props.checkMobAnswer 
+    ? () => props.checkMobAnswer(props.chars)
+    : props.changeMainFactor 
+      ? () => props.changeMainFactor(props.chars)
+      : props.showMMFPane;
   if (props.chars === undefined) {
     signs = '?';
     style = {color: "white"};
     onClickFunc = null;
   } else {
     style = props.chars>9 ? {
-      paddingLeft: 0
+      paddingLeft: 0,
     } : {};
   }
+  const position = props.position === undefined ? 'default' : props.position; 
   return (
     <span
       style={style}
-      className={styles[props.position]}
+      className={styles[position]}
       onClick={onClickFunc}
     >{signs}</span> 
   )

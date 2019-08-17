@@ -37,12 +37,12 @@ export const getExprs = (mainFactor, leftLimit, rightLimit) => {
 
 // массив вспомогательных множителей из целых чисел
 // аргументы: первый - правая граница (левая - 0) и количество множителей, второй - модификатор
-// например, на вход - 3 и 0, на выходе [1, 0, 2]
+// например, на вход - 3 и 0, на выходе [0, 9, 2]
 // например, на вход - 4 и 2, на выходе [3, 5, 4, 2]
 export const getFactors = (border, addin) => {
     let factors=[];
     while (factors.length < border) {
-        const temp = Math.floor(Math.random() * border) + addin;
+        const temp = Math.floor(Math.random() * 9) + addin;
         if ((factors.length === 0) || (!factors.includes(temp))) {
             factors.push(temp);
         } 
@@ -50,6 +50,8 @@ export const getFactors = (border, addin) => {
     // console.log(`factors=${factors}, len=${factors.length}`);
     return factors;
 }
+
+
 
 //перемешать произвольный массив
 export function mixUp(origArray) {

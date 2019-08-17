@@ -8,8 +8,9 @@ import Expression from '../Expression/Expression';
 import AllExpressions from '../AllExpressions/AllExpressions';
 import AddExression from '../AddExression/AddExression';
 import Timer from '../Timer/Timer';
-import { getExprs as getExpressions, getFactors, isMobile } from '../stuff/modules';
+import { getExprs as getExpressions, getFactors, isMobile, mixUp } from '../stuff/modules';
 import MobMainFactors from '../MobMainFactors/MobMainFactors';
+import MobileSigns from '../Expression/mobileSigns/MobileSigns';
 
 class App extends Component {
   mainFactors = []; // основные множители
@@ -19,13 +20,15 @@ class App extends Component {
       mainFactor: -1,
       expressions: [],
       expCurNum: 0,
+      rndAnswers: [],
       userInput: '',
       tempFactor1: 0, tempFactor2: 0,
       receivedRightAnswer: false,
-      seconds: 10, // время в режиме проверки знанний
+      seconds: 10, // время в режиме проверки знаний
       checkKnowledgeIsEnd: false,
-      rightAnswerCount: 0,
+      rightAnswerCount: 0, // количество верных ответов
       errorsCount: 0,
+      isShowMMFPanel: false,
       options: {
         show: false,
         isMobileMode: true,
@@ -42,6 +45,7 @@ class App extends Component {
     this.state.mainFactor = this.mainFactors.splice(0, 1)[0]; // текущий основной множитель
     this.state.expressions = getExpressions(this.state.mainFactor, this.state.options.leftLimit, this.state.options.rightLimit); // выражения
     this.state.options.isMobileMode = isMobile.any() === null ? false : true;
+    this.state.rndAnswers = this.get6Answers(this.state.expCurNum, this.state.mainFactor, this.state.expressions);
   }
 
   // Получить новые выражения
@@ -59,9 +63,46 @@ class App extends Component {
       newMainFactor = event.target.value;
     }
     this.getSetNewMainFactor(newMainFactor);
+    
   }
 
-  getSetNewMainFactor(newMainFactor) {
+  // expNum - номер выражения, для которого идёт расчёт ответов
+  // mainFactor - значение основного множетиля текущего или нового
+  get6Answers = (expNum, mainFactor, expressions) => {
+    let rightAnswer = -1;
+    let answers = [];
+    const curExpr = expressions[expNum];
+
+    switch(curExpr.hidedPart) {
+      case 'result':
+        rightAnswer = curExpr.factor1 * curExpr.factor2;
+        answers = getFactors(6,1).map(x=>x*mainFactor);
+        break;
+      case 'factor1':
+        rightAnswer = curExpr.factor1;
+        answers = getFactors(6,1);
+        break;
+      case 'factor2':
+        rightAnswer = curExpr.factor2;
+        answers = getFactors(6,1);
+        break;
+      default:
+        rightAnswer = -1;
+        break;
+    }
+    // сформировать случайные ответы на основе главного множителя
+    
+        // Если набор ответов не содержит правильного ответа, 
+    // то убрать один ответ, добавить правильный и перемешать.
+    if (!answers.find(el=>el===rightAnswer)) { 
+      answers.shift();
+      answers.push(rightAnswer);
+    }
+    answers = mixUp(answers);
+    return answers;
+  }
+
+  getSetNewMainFactor = newMainFactor => {
     const expressions = this.getExps(newMainFactor);
     if ((0 < newMainFactor) && (newMainFactor < 10)) {
       this.setState({
@@ -71,6 +112,10 @@ class App extends Component {
         expressions: expressions,
       });
     }
+    if (this.state.isShowMMFPanel) this.setState({isShowMMFPanel: false});
+    if (this.state.options.isMobileMode) {
+      // getAnswers();
+    } 
   }
 
   changeTempFactorX_handleChange = event => {
@@ -116,6 +161,9 @@ class App extends Component {
       errorsCount: 0,
       rightAnswerCount: 0,
     });
+    if (this.state.options.isMobileMode) {
+      this.answers = this.getRndAnswers();
+    } 
   }
 
   // вернуться к обычному режиму
@@ -129,6 +177,9 @@ class App extends Component {
     this.setState(prevState => ({
       options: { ...prevState.options, checkKnowledge: false }
     }));
+    if (this.state.options.isMobileMode) {
+      this.answers = this.get6Answers();
+    } 
   }
 
   tick() {
@@ -150,26 +201,42 @@ class App extends Component {
 
   checkMobAnswer_handleClick = answer => {
     const rightAnswer = this.getRightAnswer();
-    // console.log(this.state);
-    // console.log(answer);
-    
-    if (rightAnswer === answer) {  
-      // console.log("answer right");  
-    
-    this.setState({ receivedRightAnswer: true });
-
-    this.showHideAnswer_handleClick();
-
-    setTimeout(() => {
-      this.delCurExpression_handleClick();
-      this.setState({ receivedRightAnswer: false });
-    }, 3000);
-      
+    if (this.state.options.checkKnowledge) {
+      console.log('right?', (answer === rightAnswer));
+      if (answer === rightAnswer) {
+        this.delCurExpression_handleClick();
+        this.setState(prevState => ({
+          seconds: prevState.seconds + 5,
+          userInput: '',
+          rightAnswerCount: prevState.rightAnswerCount + 1,
+        }));
+      } else {
+        this.delCurExpression_handleClick();
+        this.setState(prevState => ({
+          errorsCount: prevState.errorsCount + 1,
+          userInput: '',
+        }));
+      }
+    } else {
+      if (rightAnswer === answer) {
+        this.setState({ receivedRightAnswer: true });
+        this.showHideAnswer_handleClick();
+        setTimeout(() => {
+          this.delCurExpression_handleClick();
+          this.setState({ receivedRightAnswer: false });
+        }, 3000);
+      }
     }
   }
 
   changeMainFactor_handleClick_mobile = selectedMainFactor => {
     this.getSetNewMainFactor(selectedMainFactor);
+  }
+
+  showHide_MobileMainFactorPanel_handleClick = () => {
+    this.setState( prevState => ({
+      isShowMMFPanel: !prevState.isShowMMFPanel,
+    }))
   }
 
   componentDidMount() {
@@ -180,6 +247,9 @@ class App extends Component {
   }
 
   render() {
+    // if (this.answers.length === 0) {
+    //   this.answers = this.getRndAnswers();
+    // }
     const timer = <span>{this.state.seconds}</span>
     const options =
       <>
@@ -230,20 +300,22 @@ class App extends Component {
       </>
     const mainFactor =
       <>
-        <label>Основной множитель</label>
-        {
-          this.state.options.isMobileMode ?
+        <label style={{marginRight: "0.2rem"}}>Основной множитель</label>
+        {this.state.isShowMMFPanel ?
             <MobMainFactors 
-              mainFactor={this.state.mainFactor}
-              mainFactors={this.state.mainFactors}
+              mainFactors={this.mainFactors}
               changeMainFactor={this.changeMainFactor_handleClick_mobile}
-            /> :
-            <input 
-              value={this.state.mainFactor} 
-              onChange={this.changeMainFactor_handleChange} 
-              type="number"
-            ></input>
-        }
+            /> : null}
+        {this.state.options.isMobileMode ?
+          <MobileSigns
+            chars={this.state.mainFactor}
+            showMMFPane={() => this.setState({ isShowMMFPanel: true })}
+          /> :
+          <input
+            value={this.state.mainFactor}
+            onChange={this.changeMainFactor_handleChange}
+            type="number"
+          ></input>}
       </>
     const sessionStatus =
       <>
@@ -271,6 +343,7 @@ class App extends Component {
         {/* board */}
         <section className={styles.center}>
             <Expression
+              answers={this.state.rndAnswers}
               expressions={this.state.expressions}
               expCurNum={this.state.expCurNum}
               mainFactor={this.state.mainFactor}
@@ -284,7 +357,6 @@ class App extends Component {
               isMobileMode={this.state.options.isMobileMode}
               checkMobAnswer={this.checkMobAnswer_handleClick}
             />
-
         </section>
 
         {/* footer */}
@@ -299,22 +371,25 @@ class App extends Component {
   }
 
   delCurExpression_handleClick = () => {
+    let expNextNum = -1;
     if (this.state.expressions.length > 1) {
       const expressions = [...this.state.expressions];
       expressions.splice(this.state.expCurNum, 1);
-      const expNextNum = Math.floor(Math.random() * expressions.length);
+      expNextNum = Math.floor(Math.random() * expressions.length);
       this.setState({
         expressions: expressions,
         expCurNum: expNextNum,
+        rndAnswers: this.get6Answers(expNextNum, this.state.mainFactor, expressions)
       });
     } else if (this.mainFactors.length > 0 && !this.state.options.checkKnowledge) {
       const mainFactor = this.mainFactors.splice(0, 1)[0];
       const expressions = this.getExps(mainFactor);
-      const expNextNum = Math.floor(Math.random() * expressions.length);
+      expNextNum = Math.floor(Math.random() * expressions.length);
       this.setState({
         mainFactor: mainFactor,
         expressions: expressions,
         expCurNum: expNextNum,
+        rndAnswers: this.get6Answers(expNextNum, mainFactor, expressions)
       });
     } else if (this.state.options.checkKnowledge) {
       this.setState({ checkKnowledgeIsEnd: true })
@@ -349,6 +424,7 @@ class App extends Component {
       userInput: '',
       expressions: expressions,
       expCurNum: nextExpNum,
+      rndAnswers: this.get6Answers(nextExpNum, this.state.mainFactor, expressions)
     });
   }
 
@@ -376,9 +452,9 @@ class App extends Component {
     return rightAnswer;
   }
 
-  // проверка ответа
+    // проверка ответа
   checkAnswer_handleKeyUp_input = event => {
-    let rightAnswer = this.getRightAnswer();
+    const rightAnswer = this.getRightAnswer();
     if (this.state.options.checkKnowledge) { // режим проверки знаний
       if (event.key === "Enter"
         && parseInt(this.state.userInput) === parseInt(rightAnswer)  // получен верный ответ
@@ -441,6 +517,9 @@ class App extends Component {
     this.setState(prevState => ({
       options: { ...prevState.options, missEnter: choice === "miss Enter" }
     }));
+    if (this.state.options.isMobileMode) {
+      this.answers = this.getRndAnswers();
+    } 
   }
 
   checkKnowledge_handleChange_optRBtn = e => {
@@ -464,6 +543,11 @@ class App extends Component {
         options: options,
       }
     });
+    if (this.state.options.isMobileMode) {
+      this.setState({
+        rndAnswers: this.get6Answers(this.state.expCurNum, this.state.mainFactor, this.state.expressions),
+      });
+    } 
   }
 }
 

@@ -1,16 +1,28 @@
-.factors {
-    height: 2rem;
-
+.panel {
     position: fixed;
     display: flex;
     top: 0;
+    left: 0;
     width: 100%;
-    min-height: 5rem;
-    max-height: 10rem;
     border-radius: 0.2rem;
     background-color: hsla(0, 0%, 0%, 0.85);
     align-items: center;
     flex-wrap: wrap;
     justify-content: center;
+    flex-direction: column;
     z-index: 1;
+}
+
+.factor{
+    padding: 0.5rem;
+}
+
+.factors{
+    padding: 0.5rem;
+}
+
+.header{
+    color: var(--bg-color);
+    font-weight: normal;
+    margin-top: 0.5rem;
 }
